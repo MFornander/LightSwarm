@@ -5,7 +5,21 @@
 RH_RF95 rf95(8, 3); // Rocket Scream Mini Ultra Pro with the RFM95W
 //#define Serial SerialUSB
 
-const bool server = (SERVER == 1);
+const bool s_serverFlag = (SERVER == 1);
+int s_messageCount = 0;
+
+
+void blink(int count = 1, int onTime = 100, int offTime = 900)
+{
+  for (int i=0; i<count; i++)
+  {
+    digitalWrite(LED_BUILTIN, HIGH);
+    delay(onTime);
+    digitalWrite(LED_BUILTIN, LOW);
+    delay(offTime);
+  }
+}
+
 
 void setup()
 {
@@ -18,25 +32,23 @@ void setup()
   Serial.begin(9600);
   //while (!Serial) ; // Wait for serial port to be available
 
+
   if (!rf95.init())
   {
-
     Serial.println("Init failed");
+    digitalWrite(LED_BUILTIN, HIGH);
     return;
   }
 
   //rf95.setFrequency(915.0);
-  digitalWrite(LED_BUILTIN, HIGH);
-  delay(1000);
-  digitalWrite(LED_BUILTIN, LOW);
+  rf95.setModemConfig(RH_RF95::ModemConfigChoice::Bw31_25Cr48Sf512);
+  rf95.setTxPower(23);
+  blink();
 
-  if (server)
+  if (s_serverFlag)
   {
     Serial.println("Server");
-    delay(1000);
-    digitalWrite(LED_BUILTIN, HIGH);
-    delay(1000);
-    digitalWrite(LED_BUILTIN, LOW);
+    blink(10, 100, 100);
   }
   else
   {
@@ -46,43 +58,35 @@ void setup()
 
 void loop()
 {
+  uint8_t buf[RH_RF95_MAX_MESSAGE_LEN];
+  uint8_t len = sizeof(buf);
 
-  if (server)
+  if (s_serverFlag)
   {
-    digitalWrite(LED_BUILTIN, HIGH);
-
-    uint8_t data[] = "Woop!";
-    rf95.send(data, sizeof(data));
+    sprintf(reinterpret_cast<char*>(buf), "Woop! #%d", s_messageCount++);
+    rf95.send(buf, 32);
     rf95.waitPacketSent();
     Serial.println("Sent a Woop!");
 
-    delay(100);
-    digitalWrite(LED_BUILTIN, LOW);
-
-    delay(2000);
+    blink(1, 100, 1900);
   }
   else //client
   {
-    uint8_t buf[RH_RF95_MAX_MESSAGE_LEN];
-    uint8_t len = sizeof(buf);
+
 
     if (rf95.waitAvailableTimeout(4000))
     {
       // Should be a reply message for us now
       if (rf95.recv(buf, &len))
       {
-        digitalWrite(LED_BUILTIN, HIGH);
         Serial.print("Got message: ");
-        Serial.println((char*)buf);
-        Serial.print("RSSI: ");
-        Serial.println(rf95.lastRssi(), DEC);
+        Serial.print((char*)buf);
+        Serial.print("   RSSI: ");
+        Serial.print(rf95.lastRssi(), DEC);
+        Serial.print("   SNR: ");
+        Serial.println(rf95.lastSNR());
 
-        delay(100);
-        digitalWrite(LED_BUILTIN, LOW);
-        delay(100);
-        digitalWrite(LED_BUILTIN, HIGH);
-        delay(100);
-        digitalWrite(LED_BUILTIN, LOW);
+        blink(2, 100, 100);
       }
       else
       {
