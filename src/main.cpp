@@ -1,5 +1,5 @@
-#include <SPI.h>
 #include <RH_RF95.h>
+#include <FastLED.h>
 #include <Arduino.h>
 
 RH_RF95 rf95(8, 3); // Rocket Scream Mini Ultra Pro with the RFM95W
