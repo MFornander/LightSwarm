@@ -1,6 +1,11 @@
 #include <RH_RF95.h>
+#define FASTLED_FORCE_SOFTWARE_PINS
 #include <FastLED.h>
 #include <Arduino.h>
+
+#define NUM_LEDS 60
+#define DATA_PIN 6
+CRGB leds[NUM_LEDS];
 
 RH_RF95 rf95(8, 3); // Rocket Scream Mini Ultra Pro with the RFM95W
 //#define Serial SerialUSB
@@ -14,8 +19,14 @@ void blink(int count = 1, int onTime = 100, int offTime = 900)
   for (int i=0; i<count; i++)
   {
     digitalWrite(LED_BUILTIN, HIGH);
+    for (int ledID=0; ledID < NUM_LEDS; ledID++)
+      leds[ledID] = CRGB::Blue;
+    FastLED.show();
     delay(onTime);
     digitalWrite(LED_BUILTIN, LOW);
+    for (int ledID=0; ledID < NUM_LEDS; ledID++)
+      leds[ledID] = CRGB::Black;
+    FastLED.show();
     delay(offTime);
   }
 }
@@ -32,6 +43,7 @@ void setup()
   Serial.begin(9600);
   //while (!Serial) ; // Wait for serial port to be available
 
+  FastLED.addLeds<WS2812B, DATA_PIN, GRB>(leds, NUM_LEDS);
 
   if (!rf95.init())
   {
@@ -86,7 +98,7 @@ void loop()
         Serial.print("   SNR: ");
         Serial.println(rf95.lastSNR());
 
-        blink(2, 100, 100);
+        blink(4, 100, 100);
       }
       else
       {
