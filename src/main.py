@@ -1,7 +1,18 @@
 import utime
 import machine
 import esp
+import math
 
+
+@micropython.asm_xtensa
+def a(a2, a3):
+    mov(a4, a2)
+    movi(a2, 0)
+    movi(a5, 1)
+    label(LOOP)
+    add(a2, a2, a4)
+    sub(a3, a3, a5)
+    bnez(a3, LOOP)
 
 if __name__ == '__main__':
     i = 0
@@ -14,7 +25,7 @@ if __name__ == '__main__':
 
     rgb = bytearray(240*3)
     oldTime = utime.ticks_ms()
-    mode = 3
+    mode = 4
 
     while True:
         # mode 0: 142 fps (do nothing)
@@ -47,12 +58,25 @@ if __name__ == '__main__':
             j = 0
             while j < 240:
                 rgb[j + 0] = 0
-                rgb[j + 1] = offset % 24
-                rgb[j + 2] = offset % 24
+                rgb[j + 1] = offset
+                rgb[j + 2] = offset
                 j += 3
 
-            offset = offset + 1
-            offset = offset % 24
+            offset += 1
+            offset %= 24
+
+        # mode 4: 22 fps (rainbow'ish)
+        elif mode == 4:
+            j = 0
+            while j < 240:
+
+                rgb[j + 0] = int((1 + math.sin(offset/10)) * 120)
+                rgb[j + 1] = int((1 + math.sin(offset/9)) * 120)
+                rgb[j + 2] = int((1 + math.sin(offset/8)) * 120)
+                j += 3
+
+            offset += 1
+            offset %= 0xFFFF
 
         esp.neopixel_write(gpio4, rgb, True)
 
