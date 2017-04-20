@@ -25,10 +25,11 @@ if __name__ == '__main__':
 
     rgb = bytearray(240*3)
     oldTime = utime.ticks_ms()
-    mode = 4
 
+    mode = 4
     while True:
         # mode 0: 142 fps (do nothing)
+        # Theoretical max of 240 LED strip is 145 fps eg: 1 / (1.2us * 8 * 3 * 240)
 
         # mode 1: 125 fps (set six bytes, two pixels)
         if mode == 1:
@@ -56,7 +57,7 @@ if __name__ == '__main__':
         # mode 3: 55 fps (same as mode 2 - using operator +=)
         elif mode == 3:
             j = 0
-            while j < 240:
+            while j < 240*3:
                 rgb[j + 0] = 0
                 rgb[j + 1] = offset
                 rgb[j + 2] = offset
@@ -68,7 +69,7 @@ if __name__ == '__main__':
         # mode 4: 22 fps (rainbow'ish)
         elif mode == 4:
             j = 0
-            while j < 240:
+            while j < 240*3:
 
                 rgb[j + 0] = int((1 + math.sin(offset/10)) * 120)
                 rgb[j + 1] = int((1 + math.sin(offset/9)) * 120)
@@ -80,12 +81,11 @@ if __name__ == '__main__':
 
         esp.neopixel_write(gpio4, rgb, True)
 
+        on = ~on
         if on:
             led.low()
-            on = False
         else:
             led.high()
-            on = True
 
         newTime = utime.ticks_ms()
         print("FPS:", int(1000.0 / utime.ticks_diff(newTime, oldTime)))
