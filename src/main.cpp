@@ -1,33 +1,35 @@
-#include <RH_RF95.h>
+//#include <RH_RF95.h>
 #define FASTLED_FORCE_SOFTWARE_PINS
 #include <FastLED.h>
 #include <Arduino.h>
+#define LED_BUILTIN 2
 
-#define NUM_LEDS 60
-#define DATA_PIN 6
+#define NUM_LEDS 240
+#define DATA_PIN 4
 CRGB leds[NUM_LEDS];
 
-RH_RF95 rf95(8, 3); // Rocket Scream Mini Ultra Pro with the RFM95W
+//RH_RF95 rf95(8, 3); // Rocket Scream Mini Ultra Pro with the RFM95W
 //#define Serial SerialUSB
 
-const bool s_serverFlag = (SERVER == 1);
-int s_messageCount = 0;
 
+unsigned long oldTime = millis();
+long oldFrames = 0;
+long frames = 0;
 
 void blink(int count = 1, int onTime = 100, int offTime = 900)
 {
   for (int i=0; i<count; i++)
   {
-    digitalWrite(LED_BUILTIN, HIGH);
-    for (int ledID=0; ledID < NUM_LEDS; ledID++)
-      leds[ledID] = CRGB::Blue;
-    FastLED.show();
-    delay(onTime);
     digitalWrite(LED_BUILTIN, LOW);
+    for (int ledID=0; ledID < NUM_LEDS; ledID++)
+      leds[ledID] = CRGB::DeepPink;
+    FastLED.show();
+    //delay(onTime);
+    digitalWrite(LED_BUILTIN, HIGH);
     for (int ledID=0; ledID < NUM_LEDS; ledID++)
       leds[ledID] = CRGB::Black;
     FastLED.show();
-    delay(offTime);
+    //delay(offTime);
   }
 }
 
@@ -38,77 +40,40 @@ void setup()
   digitalWrite(LED_BUILTIN, LOW);
 
   // Ensure serial flash is not interfering with radio communication on SPI bus
-  pinMode(4, OUTPUT);
-  digitalWrite(4, HIGH);
-  Serial.begin(9600);
-  //while (!Serial) ; // Wait for serial port to be available
+  Serial.begin(115200);
+  while (!Serial) ; // Wait for serial port to be available
 
-  FastLED.addLeds<WS2812B, DATA_PIN, GRB>(leds, NUM_LEDS);
-
-  if (!rf95.init())
-  {
-    Serial.println("Init failed");
-    digitalWrite(LED_BUILTIN, HIGH);
-    return;
-  }
-
-  //rf95.setFrequency(915.0);
-  rf95.setModemConfig(RH_RF95::ModemConfigChoice::Bw31_25Cr48Sf512);
-  rf95.setTxPower(23);
-  blink();
-
-  if (s_serverFlag)
-  {
-    Serial.println("Server");
-    blink(10, 100, 100);
-  }
-  else
-  {
-    Serial.println("Client");
-  }
+  FastLED.addLeds<WS2813, DATA_PIN, GRB>(leds, NUM_LEDS);
 }
 
 void loop()
 {
-  uint8_t buf[RH_RF95_MAX_MESSAGE_LEN];
-  uint8_t len = sizeof(buf);
-
-  if (s_serverFlag)
-  {
-    sprintf(reinterpret_cast<char*>(buf), "Woop! #%d", s_messageCount++);
-    rf95.send(buf, 32);
-    rf95.waitPacketSent();
-    Serial.println("Sent a Woop!");
-
-    blink(1, 100, 1900);
-  }
-  else //client
-  {
-
-
-    if (rf95.waitAvailableTimeout(4000))
+    unsigned long currentTime = millis();
+    if (currentTime > oldTime + 1000)
     {
-      // Should be a reply message for us now
-      if (rf95.recv(buf, &len))
-      {
-        Serial.print("Got message: ");
-        Serial.print((char*)buf);
-        Serial.print("   RSSI: ");
-        Serial.print(rf95.lastRssi(), DEC);
-        Serial.print("   SNR: ");
-        Serial.println(rf95.lastSNR());
+        Serial.println(frames - oldFrames);
+        oldFrames = frames;
+        oldTime = currentTime;
+    }
 
-        blink(4, 100, 100);
-      }
-      else
-      {
-        Serial.println("recv failed");
-      }
+
+
+    if ((frames % 10) == 0)
+    {
+      digitalWrite(LED_BUILTIN, LOW);
+      //for (int ledID=0; ledID < NUM_LEDS; ledID++)
+      //  leds[ledID] = CRGB::DeepPink;
     }
     else
     {
-      Serial.println("No message, is server running?");
+      digitalWrite(LED_BUILTIN, HIGH);
+      //for (int ledID=0; ledID < NUM_LEDS; ledID++)
+      //  leds[ledID] = CRGB::Black;
     }
-  }
 
+    fill_rainbow(leds, NUM_LEDS, frames, 1);
+
+    delay(1);
+    FastLED.show();
+    frames++;
 }
