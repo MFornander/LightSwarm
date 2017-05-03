@@ -11,11 +11,13 @@
 #include "swarm.h"
 
 #define LED_BUILTIN 2
+#define LONEWOLF_DATA_PIN 4
 
 #define NUM_LEDS 240
-#define DATA_PIN 4
+#define NUM_STRANDS 4
 
-CRGB leds[NUM_LEDS];
+
+CRGB leds[NUM_LEDS*NUM_STRANDS];
 swarm  swarm;
 
 void setup()
@@ -29,7 +31,12 @@ void setup()
     Serial.begin(115200);
     while (!Serial) ; // Wait for serial port to be available
 
-    FastLED.addLeds<WS2811_PORTA, 1, GRB>(leds, NUM_LEDS);
+#ifdef LONEWOLF
+    FastLED.addLeds<WS2812, LONEWOLF_DATA_PIN, GRB>(leds, NUM_LEDS);
+#else
+    FastLED.addLeds<WS2811_PORTA, NUM_STRANDS, GRB>(leds, NUM_LEDS);
+#endif
+
     //FastLED.addLeds<WS2813, DATA_PIN, GRB>(leds, NUM_LEDS);
     set_max_power_in_volts_and_milliamps(5, 4000);
 }
@@ -46,7 +53,7 @@ void debug()
 
 void animate()
 {
-    fill_rainbow(leds, NUM_LEDS, swarm.getNodeTime() / (1000*10), 10);
+    fill_rainbow(leds, NUM_LEDS*NUM_STRANDS, swarm.getNodeTime() / (1000*10), 10);
 }
 
 void loop()
