@@ -7,18 +7,23 @@
 #include <FastLED.h>
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
+#include <my9291.h>
 
 #include "swarm.h"
 
 #define LED_BUILTIN 2
 #define LONEWOLF_DATA_PIN 4
+#define MY9291_DI_PIN   13
+#define MY9291_DCKI_PIN 15
 
 #define NUM_LEDS 240
 #define NUM_STRANDS 4
 
 
+
 CRGB leds[NUM_LEDS*NUM_STRANDS];
 swarm  swarm;
+my9291 _my9291 = my9291(MY9291_DI_PIN, MY9291_DCKI_PIN, MY9291_COMMAND_DEFAULT);
 
 void setup()
 {
@@ -31,10 +36,10 @@ void setup()
     Serial.begin(115200);
     while (!Serial) ; // Wait for serial port to be available
 
-#ifdef LONEWOLF
-    FastLED.addLeds<WS2812, LONEWOLF_DATA_PIN, GRB>(leds, NUM_LEDS);
-#else
+#if TYPE == 1
     FastLED.addLeds<WS2811_PORTA, NUM_STRANDS, GRB>(leds, NUM_LEDS);
+#else
+    FastLED.addLeds<WS2812, LONEWOLF_DATA_PIN, GRB>(leds, NUM_LEDS);
 #endif
 
     //FastLED.addLeds<WS2813, DATA_PIN, GRB>(leds, NUM_LEDS);
@@ -68,4 +73,9 @@ void loop()
 
     show_at_max_brightness_for_power();
     delay(1);
+
+#if TYPE == 3
+    _my9291.setColor((my9291_color_t) { leds[0].red, leds[0].green, leds[0].blue, 0 });
+    _my9291.setState(true);
+#endif
 }
