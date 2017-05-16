@@ -1,0 +1,12 @@
+before_script:
+  - apt-get update -qq && apt-get install -y -qq python-pip
+  - pip install platformio
+  - platformio lib --global install ArduinoJson
+  
+linux:
+  script:
+    - platformio ci --lib="." --board=nodemcuv2 examples/basic/basic.ino
+    - platformio ci --lib="." --board=nodemcuv2 examples/startHere/startHere.ino
+    - platformio ci --lib="." --board=nodemcuv2 examples/bridge/bridge.ino
+    - platformio ci --lib="." --board=nodemcuv2 examples/logServer/logServer.ino
+    - platformio ci --lib="." --board=nodemcuv2 examples/logClient/logClient.ino
