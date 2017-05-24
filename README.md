@@ -1,1 +1,54 @@
 # LightSwarm
+Wireless awesome light project for BurningMan.
+
+A platform for art cars, art bikes, wearable art, and stationary art to synchronize their LED animations.  Various art pieces can "talk" with each other to simulate dancing, flirting, or other emotions and expressions.
+
+
+
+## Definitions
+Below is an unsorted list of capabilities, libraries, and modules that we are working towards.
+
+### NODE
+* Unit that can receive and send messages, usually wirelessly.
+* Usually controls one or more LEDs, sometimes several hundred LEDs organized into stands or tentacles.
+
+### ESP8266
+* Originally 2.4GHz Wifi chip
+* "Hijacked" by the open source community as cheap arduino killer with radio
+* We have selected ESP8266 as the initial MCU+Radio because of cost and community and support.
+* The main module is the "Wemos D1 mini" for now
+
+
+## Libraries and Tools
+Quick list of software components we use.
+
+### painlessMesh
+https://gitlab.com/BlackEdder/painlessMesh/wikis/home
+
+* An ad-hoc (no hub access point) library that allows ESPs to connect with each other without a WiFi hub.
+* Good info and pics: 
+* Also provides time synchronization which is KEY to syncing animations
+
+### FastLED
+http://fastled.io/
+
+* Library to drive WS2812 (2811, 2813) LEDs
+* Tried and true with any hardware targets
+* Latest branch/commit allows ESP8266 to drive 4 LED strands in parallel.
+
+### RadioHead
+http://www.airspayce.com/mikem/arduino/RadioHead/
+
+* Unused library to connect using LoRa (instead of easyMesh)
+* Longer range (1 mile)
+* More expensive ($10 per radio, no including MCU)
+
+### ArduinoJSON
+https://github.com/bblanchon/ArduinoJson
+
+* Easy library to serialize JSON
+
+
+
+Features:
+* Ad-hoc mesh networking allowing nodes to come and go
