@@ -1,13 +1,18 @@
 //#include <RH_RF95.h>
+
 //#define FASTLED_FORCE_SOFTWARE_PINS
 #include <Arduino.h>
 #define FASTLED_ESP8266_D1_PIN_ORDER
-//#define FASTLED_INTERRUPT_RETRY_COUNT 0
+#define FASTLED_INTERRUPT_RETRY_COUNT 0
 //#define FASTLED_ALLOW_INTERRUPTS 0
 #include <FastLED.h>
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
-#include <my9291.h>
+
+#if TYPE == 3
+//#include <my9291.h>
+my9291 _my9291 = my9291(MY9291_DI_PIN, MY9291_DCKI_PIN, MY9291_COMMAND_DEFAULT);
+#endif
 
 #include "swarm.h"
 
@@ -19,11 +24,8 @@
 #define NUM_LEDS 240
 #define NUM_STRANDS 4
 
-
-
 CRGB leds[NUM_LEDS*NUM_STRANDS];
 swarm  swarm;
-my9291 _my9291 = my9291(MY9291_DI_PIN, MY9291_DCKI_PIN, MY9291_COMMAND_DEFAULT);
 
 void setup()
 {
@@ -44,6 +46,8 @@ void setup()
 
     //FastLED.addLeds<WS2813, DATA_PIN, GRB>(leds, NUM_LEDS);
     set_max_power_in_volts_and_milliamps(5, 4000);
+
+    memset8(leds, 0, NUM_LEDS*NUM_STRANDS*3);
 }
 
 void debug()
@@ -51,14 +55,24 @@ void debug()
     EVERY_N_SECONDS(1)
     {
         Serial.printf(NAME ": fps=%d t=%u\n", LEDS.getFPS(), swarm.getNodeTime());
-        static bool debug_blink = false;
-        digitalWrite(LED_BUILTIN, debug_blink = !debug_blink ? HIGH : LOW);
+        digitalWrite(LED_BUILTIN, LOW);
     }
 }
 
 void animate()
 {
-    fill_rainbow(leds, NUM_LEDS*NUM_STRANDS, swarm.getNodeTime() / (1000*10), 10);
+    fill_rainbow(leds, NUM_LEDS, swarm.getNodeTime() / (1000*10), 10);
+
+    CRGB* one =   leds + NUM_LEDS;
+    CRGB* two =   leds + NUM_LEDS*2;
+    CRGB* three = leds + NUM_LEDS*3;
+
+    for (int i = 0; i < NUM_LEDS; i++)
+    {
+        one[i].red = leds[i].red;
+        two[i].green = leds[i].green;
+        three[i].blue = leds[i].blue;
+    }
 }
 
 void loop()
@@ -78,4 +92,6 @@ void loop()
     _my9291.setColor((my9291_color_t) { leds[0].red, leds[0].green, leds[0].blue, 0 });
     _my9291.setState(true);
 #endif
+
+    digitalWrite(LED_BUILTIN, HIGH);
 }
