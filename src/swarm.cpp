@@ -9,7 +9,7 @@ bool calc_delay = false;
 SimpleList<uint32_t> nodes;
 uint32_t sendMessageTime = 0;
 
-swarm::swarm()
+Swarm::Swarm()
 {
     using namespace std::placeholders;
 
@@ -21,18 +21,18 @@ swarm::swarm()
     onReceive(&receivedCallback);
     onNewConnection(&newConnectionCallback);
     //onChangedConnections(&changedConnectionCallback);
-    onChangedConnections(std::bind(&swarm::changedConnectionCallback, this));
-    onNodeTimeAdjusted(std::bind(&swarm::nodeTimeAdjustedCallback, this, _1));
+    onChangedConnections(std::bind(&Swarm::changedConnectionCallback, this));
+    onNodeTimeAdjusted(std::bind(&Swarm::nodeTimeAdjustedCallback, this, _1));
     onNodeDelayReceived(&delayReceivedCallback);
 
     randomSeed(analogRead(A0));
 }
 
-swarm::~swarm()
+Swarm::~Swarm()
 {
 }
 
-void swarm::update()
+void Swarm::update()
 {
     bool error;
 
@@ -62,17 +62,17 @@ void swarm::update()
     }
 }
 
-void swarm::receivedCallback(uint32_t from, String &msg)
+void Swarm::receivedCallback(uint32_t from, String& msg)
 {
     Serial.printf(NAME ": Received msg=%s\n", msg.c_str());
 }
 
-void swarm::newConnectionCallback(uint32_t nodeId)
+void Swarm::newConnectionCallback(uint32_t nodeId)
 {
     Serial.printf("--> startHere: New Connection, nodeId = %u\n", nodeId);
 }
 
-void swarm::changedConnectionCallback()
+void Swarm::changedConnectionCallback()
 {
     Serial.printf("Changed connections %s\n", subConnectionJson().c_str());
 
@@ -91,12 +91,12 @@ void swarm::changedConnectionCallback()
     calc_delay = true;
 }
 
-void swarm::nodeTimeAdjustedCallback(int32_t offset)
+void Swarm::nodeTimeAdjustedCallback(int32_t offset)
 {
     Serial.printf("Adjusted time %u. Offset = %d\n", getNodeTime(), offset);
 }
 
-void swarm::delayReceivedCallback(uint32_t from, int32_t delay)
+void Swarm::delayReceivedCallback(uint32_t from, int32_t delay)
 {
     Serial.printf("Delay to node %u is %d us\n", from, delay);
 }
