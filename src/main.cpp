@@ -5,57 +5,89 @@
 
 #include <Arduino.h>
 #include <FastLED.h>
-#include <ESP8266WiFi.h>
+#include <Ticker.h>
 
 #include "debug.h"
+#include "ota.h"
 #include "swarm.h"
 
+SwarmDebug   debug;
+SwarmOTA     ota;
+SwarmNetwork swarm;
+Ticker       ticker;
 
 #define NUM_LEDS 240
 #define NUM_STRANDS 4
-
 CRGB       leds[NUM_LEDS*NUM_STRANDS];
-SwarmDebug debug;
-Swarm      swarm;
 
+#define WEMOS_BUTTON D3
+
+#define OTA_SSID "nvtestwireless"
+#define OTA_PASS ""
+#define OTA_HOST "fornander.com"
+#define OTA_PATH "/firmware.bin"
+
+
+void DoOTA()
+{
+    ota.RebootUpdate(OTA_SSID, OTA_PASS, OTA_HOST, OTA_PATH);
+}
+
+void Receive(uint32_t from, String& message)
+{
+    //Serial.printf(NAME ": Received msg=%s\n", message.c_str());
+
+    if (message == "ota")
+        ticker.attach(5, DoOTA);
+}
 
 void setup()
 {
+    debug.Info("LightSwarm Node: " NAME);
+    ota.TryUpdate();
+
     FastLED.addLeds<WS2811_PORTA, NUM_STRANDS, GRB>(leds, NUM_LEDS);
     set_max_power_in_volts_and_milliamps(5, 4000);
-
     memset8(leds, 0, NUM_LEDS*NUM_STRANDS*3);
+
+    swarm.Init();
+    swarm.SetReceived(&Receive);
+
+    pinMode(WEMOS_BUTTON, INPUT);
 }
 
 void debugFunc()
 {
-    EVERY_N_SECONDS(1)
+    EVERY_N_SECONDS(2)
     {
         debug.SetLed(true);
-        Serial.printf(NAME ": fps=%d t=%u\n", LEDS.getFPS(), swarm.getNodeTime());
+        debug.Info(NAME ": fps=%d time=%u nodes=%u",
+            LEDS.getFPS(), swarm.GetTime(), swarm.GetNodeCount());
     }
 }
 
 void animate()
 {
-    fill_rainbow(leds, NUM_LEDS, swarm.getNodeTime() / (1000*10), 10);
+    fill_rainbow(leds, NUM_LEDS, swarm.GetTime() / (1000*10), 10);
 
     CRGB* one =   leds + NUM_LEDS;
     CRGB* two =   leds + NUM_LEDS*2;
     CRGB* three = leds + NUM_LEDS*3;
 
-    for (int i = 0; i < NUM_STRANDS; i++)
+    for (int i = 0; i < NUM_LEDS; i++)
     {
         one[i].red =    leds[i].red;
         two[i].green =  leds[i].green;
         three[i].blue = leds[i].blue;
     }
+
+fill_rainbow(leds, NUM_LEDS*NUM_STRANDS, swarm.GetTime() / (1000*3), -1);
 }
 
 void loop()
 {
     debugFunc();
-    swarm.update();
+    swarm.Update();
 
     EVERY_N_MILLISECONDS(10)
     {
@@ -63,8 +95,17 @@ void loop()
     }
 
     show_at_max_brightness_for_power();
-    delay(1);
 
-
+    delay(1);  // yield();
     debug.SetLed(false);
+
+
+    if (!digitalRead(WEMOS_BUTTON))
+    {
+        while (!digitalRead(WEMOS_BUTTON))
+            delay(1);
+        swarm.Broadcast(String("ota"));
+
+        ticker.attach(5, DoOTA);
+    }
 }

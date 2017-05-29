@@ -10,9 +10,10 @@ public:
 
     void SetLed(bool on = true);
 
-    void Info(char* message);
-    void Warn(char* message);
-    void Error(char* message);
+    void Trace(const char* format, ...);
+    void Info(const char* format, ...);
+    void Warn(const char* format, ...);
+    void Error(const char* format, ...);
 };
 
 #endif
