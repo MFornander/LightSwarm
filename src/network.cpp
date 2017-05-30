@@ -43,12 +43,19 @@ void Network::Update()
 
     // get next random time for send message
     if (m_sendMessageTime == 0)
+    {
         m_sendMessageTime = m_mesh.getNodeTime() + random(1000000, 5000000);
+        INFO("New SMT! smt=%u\n", m_sendMessageTime);
+    }
 
     // if the time is ripe, send everyone a message!
     if (m_sendMessageTime != 0 && (int)m_sendMessageTime - (int)m_mesh.getNodeTime() < 0)
     {
-        // Cast to int in case of time rollover
+        INFO("Broadcasting hello! smt=%d time=%d diff=%d\n",
+            (int)m_sendMessageTime,
+            (int)m_mesh.getNodeTime(),
+            (int)m_sendMessageTime - (int)m_mesh.getNodeTime());
+
         String msg = "Hello from ";
         msg += String(m_mesh.getNodeId(), HEX);
         bool error = m_mesh.sendBroadcast(msg);
@@ -106,7 +113,7 @@ void Network::ChangedConnectionCallback()
     m_nodes = m_mesh.getNodeList();
     INFO("[NET] Connection list (num=%d):", m_nodes.size());
     for (auto node : m_nodes)
-        INFO(" %x", node);
+        INFO(" %x ", node);
     INFO("\n");
 
     m_calcDelay = true;

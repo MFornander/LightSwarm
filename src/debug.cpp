@@ -3,6 +3,7 @@
 #include "debug.h"
 
 #define LED_BUILTIN 2
+#define MESSAGE_SIZE 512
 
 namespace LightSwarm {
 
@@ -25,13 +26,11 @@ void Debug::SetLed(bool on)
 
 void Debug::Info(const char* format, ...)
 {
-    char buffer[128];
-    buffer[0] = 'I';
-    buffer[1] = ':';
+    char buffer[MESSAGE_SIZE];
     va_list args;
 
     va_start(args, format);
-    vsnprintf(buffer+2, sizeof(buffer)-2, format, args);
+    vsnprintf(buffer, sizeof(buffer), format, args);
     va_end(args);
 
     Serial.print(buffer);
@@ -39,7 +38,7 @@ void Debug::Info(const char* format, ...)
 
 void Debug::Warn(const char* format, ...)
 {
-    char buffer[128];
+    char buffer[MESSAGE_SIZE];
     buffer[0] = 'W';
     buffer[1] = ':';
     va_list args;
@@ -53,7 +52,7 @@ void Debug::Warn(const char* format, ...)
 
 void Debug::Error(const char* format, ...)
 {
-    char buffer[128];
+    char buffer[MESSAGE_SIZE];
     buffer[0] = 'E';
     buffer[1] = ':';
     va_list args;

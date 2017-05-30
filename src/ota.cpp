@@ -88,7 +88,6 @@ void OTA::TryUpdate()
     wl_status_t status = WiFi.begin(ssid, pass);
     while (retries > 0 && status != WL_CONNECTED)
     {
-        INFO(".");
         delay(1000);
         retries--;
         status = WiFi.status();
@@ -112,14 +111,13 @@ void OTA::TryUpdate()
             break;
 
         case HTTP_UPDATE_OK:
-            SPIFFS.end();
-
             INFO("[OTA] Update success.  Rebooting into new firmware...\n");
-            ESP.restart();
             break;
     }
 
-    INFO(ESPhttpUpdate.getLastErrorString().c_str());
+    INFO("%s\n", ESPhttpUpdate.getLastErrorString().c_str());
+    SPIFFS.end();
+    ESP.restart();
 }
 
 } // namespace

@@ -10,8 +10,7 @@
 #include "control.h"
 #include "debug.h"
 #include "network.h"
-
-#include "ota.pass"
+#include "ota.h"
 #include "version.h"
 
 using namespace LightSwarm;
