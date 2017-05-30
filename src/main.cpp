@@ -10,17 +10,22 @@
 #include "control.h"
 #include "debug.h"
 #include "network.h"
-#include "ota.h"
+
+#include "ota.pass"
 #include "version.h"
 
 using namespace LightSwarm;
-
 
 Control control;
 Debug   debug;
 Network network;
 OTA     ota;
 Ticker  ticker;
+
+#define OTA_SSID "nvtestwireless"
+#include "ota.pass"
+#define OTA_HOST "fornander.com"
+#define OTA_PATH "/firmware.bin"
 
 
 #define NUM_LEDS 240
@@ -29,11 +34,6 @@ CRGB       leds[NUM_LEDS*NUM_STRANDS];
 
 #define WEMOS_BUTTON D3
 
-#define OTA_SSID "nvtestwireless"
-#define OTA_PASS ""
-#define OTA_HOST "fornander.com"
-#define OTA_PATH "/firmware.bin"
-
 
 void DoOTA()
 {
@@ -41,9 +41,12 @@ void DoOTA()
 }
 
 
-void Receive(uint32_t from, String& message)
+void Receive(uint32_t from, const String& message)
 {
-    //Serial.printf(NAME ": Received msg=%s\n", message.c_str());
+    if (from == network.GetNodeID())
+        return;
+
+    INFO("[NET] Received from=%x msg=%s\n", from, message.c_str());
 
     if (message == "ota")
         ticker.attach(5, DoOTA);
@@ -55,13 +58,15 @@ void debugFunc()
     EVERY_N_SECONDS(2)
     {
         debug.SetLed(true);
-        debug.Info("%s: fps=%d time=%u nodes=%u",
+        INFO("%s: id=%x fps=%d time=%x nodes=%u\n",
             Version::BUILD,
+            network.GetNodeID(),
             LEDS.getFPS(),
             network.GetTime(),
-            network.GetNodeCount());
+            network.GetNodeCount() + 1);
     }
 }
+
 
 void animate()
 {
@@ -83,13 +88,13 @@ void animate()
 
 void setup()
 {
-    debug.Info("LightSwarm %s", Version::BUILD);
+    INFO("LightSwarm %s:%x\n", Version::BUILD, network.GetNodeID());
     ota.TryUpdate();
 
 
 
     network.Init();
-    network.SetReceived(&Receive);
+    network.SetReceived(Receive);
 
     // TODO(mf): Remove and refactor this to a dedicated animation class
     FastLED.addLeds<WS2811_PORTA, NUM_STRANDS, GRB>(leds, NUM_LEDS);

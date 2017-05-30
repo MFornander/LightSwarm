@@ -10,7 +10,7 @@ namespace LightSwarm {
 
 #define INFO_IF(cond, ...)  (!cond) ? (void)0 : INFO(__VA_ARGS__)
 #define WARN_IF(cond, ...)  (!cond) ? (void)0 : WARN(__VA_ARGS__)
-#define ERR_IF(cond, ...)   (!cond) ? (void)0 : ERROR(__VA_ARGS__)
+#define ERR_IF(cond, ...) (!cond) ? (void)0 : ERR(__VA_ARGS__)
 
 
 class Debug final
@@ -20,7 +20,6 @@ public:
 
     void SetLed(bool on = true);
 
-    void Trace(const char* format, ...);
     void Info(const char* format, ...);
     void Warn(const char* format, ...);
     void Error(const char* format, ...);

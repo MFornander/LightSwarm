@@ -26,13 +26,43 @@ void Debug::SetLed(bool on)
 void Debug::Info(const char* format, ...)
 {
     char buffer[128];
+    buffer[0] = 'I';
+    buffer[1] = ':';
     va_list args;
 
     va_start(args, format);
-    vsnprintf(buffer, sizeof(buffer), reinterpret_cast<const char*>(format), args);
+    vsnprintf(buffer+2, sizeof(buffer)-2, format, args);
     va_end(args);
 
-    Serial.println(buffer);
+    Serial.print(buffer);
+}
+
+void Debug::Warn(const char* format, ...)
+{
+    char buffer[128];
+    buffer[0] = 'W';
+    buffer[1] = ':';
+    va_list args;
+
+    va_start(args, format);
+    vsnprintf(buffer+2, sizeof(buffer)-2, format, args);
+    va_end(args);
+
+    Serial.print(buffer);
+}
+
+void Debug::Error(const char* format, ...)
+{
+    char buffer[128];
+    buffer[0] = 'E';
+    buffer[1] = ':';
+    va_list args;
+
+    va_start(args, format);
+    vsnprintf(buffer+2, sizeof(buffer)-2, format, args);
+    va_end(args);
+
+    Serial.print(buffer);
 }
 
 

@@ -1,5 +1,6 @@
 #include <functional>
 
+#include "debug.h"
 #include "network.h"
 
 #define MESH_SSID       "whateverYouLike"
@@ -7,7 +8,6 @@
 #define MESH_PORT       5555
 
 namespace LightSwarm {
-
 
 Network::Network()
 {
@@ -42,27 +42,23 @@ void Network::Update()
     m_mesh.update();
 
     // get next random time for send message
-    if (sendMessageTime == 0)
-        sendMessageTime = m_mesh.getNodeTime() + random(1000000, 5000000);
+    if (m_sendMessageTime == 0)
+        m_sendMessageTime = m_mesh.getNodeTime() + random(1000000, 5000000);
 
     // if the time is ripe, send everyone a message!
-    if (sendMessageTime != 0 && (int)sendMessageTime - (int)m_mesh.getNodeTime() < 0)
+    if (m_sendMessageTime != 0 && (int)m_sendMessageTime - (int)m_mesh.getNodeTime() < 0)
     {
         // Cast to int in case of time rollover
         String msg = "Hello from ";
         msg += String(m_mesh.getNodeId(), HEX);
         bool error = m_mesh.sendBroadcast(msg);
-        sendMessageTime = 0;
+        m_sendMessageTime = 0;
 
-        if (calc_delay)
+        if (m_calcDelay)
         {
-            SimpleList<uint32_t>::iterator node = nodes.begin();
-            while (node != nodes.end())
-            {
-                m_mesh.startDelayMeas(*node);
-                node++;
-            }
-            calc_delay = false;
+            for (auto node : m_nodes)
+                m_mesh.startDelayMeas(node);
+            m_calcDelay = false;
         }
     }
 }
@@ -72,9 +68,15 @@ uint32_t Network::GetTime()
     return m_mesh.getNodeTime();
 }
 
+uint32_t Network::GetNodeID()
+{
+    return m_mesh.getNodeId();
+}
+
+
 uint32_t Network::GetNodeCount()
 {
-    return m_mesh.getNodeList().size();
+    return m_nodes.size();
 }
 
 void Network::Broadcast(const String& message)
@@ -89,41 +91,35 @@ void Network::SetReceived(ReceivedCallbackT callback)
 
 void Network::ReceivedCallback(uint32_t from, String& msg)
 {
-    Serial.printf("%x: Received msg=%s\n", m_mesh.getNodeId(), msg.c_str());
+    INFO("[NET] %x: Received msg=%s\n", m_mesh.getNodeId(), msg.c_str());
 }
 
 void Network::NewConnectionCallback(uint32_t nodeId)
 {
-    Serial.printf("--> startHere: New Connection, nodeId = %x\n", nodeId);
+    INFO("[NET] New Connection, id=%x\n", nodeId);
 }
 
 void Network::ChangedConnectionCallback()
 {
-    Serial.printf("Changed connections %s\n", m_mesh.subConnectionJson().c_str());
+    INFO("[NET] Changed connections %s\n", m_mesh.subConnectionJson().c_str());
 
-    nodes = m_mesh.getNodeList();
+    m_nodes = m_mesh.getNodeList();
+    INFO("[NET] Connection list (num=%d):", m_nodes.size());
+    for (auto node : m_nodes)
+        INFO(" %x", node);
+    INFO("\n");
 
-    Serial.printf("Num nodes: %d\n", nodes.size());
-    Serial.printf("Connection list:");
-
-    SimpleList<uint32_t>::iterator node = nodes.begin();
-    while (node != nodes.end())
-    {
-        Serial.printf(" %u", *node);
-        node++;
-    }
-    Serial.println();
-    calc_delay = true;
+    m_calcDelay = true;
 }
 
 void Network::NodeTimeAdjustedCallback(int32_t offset)
 {
-    Serial.printf("Adjusted time %u. Offset = %d\n", m_mesh.getNodeTime(), offset);
+    INFO("[NET] Adjusted time %x. Offset = %d\n", m_mesh.getNodeTime(), offset);
 }
 
 void Network::DelayReceivedCallback(uint32_t from, int32_t delay)
 {
-    Serial.printf("Delay to node %u is %d us\n", from, delay);
+    INFO("[NET] Delay to node %x is %d us\n", from, delay);
 }
 
 } // namespace

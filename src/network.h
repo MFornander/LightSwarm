@@ -15,9 +15,10 @@ public:
     void Init(uint8_t channel = 0);
     void Update();
     uint32_t GetTime();
+    uint32_t GetNodeID();
     uint32_t GetNodeCount();
 
-    using ReceivedCallbackT = std::function<void(uint32_t from, String& msg)>;
+    using ReceivedCallbackT = std::function<void(uint32_t from, const String& msg)>;
     void Broadcast(const String& msg);
     void SetReceived(ReceivedCallbackT callback);
 
@@ -30,9 +31,9 @@ private:
     void DelayReceivedCallback(uint32_t from, int32_t delay);
 
     painlessMesh          m_mesh;
-    bool                  calc_delay = false;
-    SimpleList<uint32_t>  nodes;
-    uint32_t              sendMessageTime = 0;
+    bool                  m_calcDelay = false;
+    SimpleList<uint32_t>  m_nodes;
+    uint32_t              m_sendMessageTime = 0;
 };
 } // namespace
 

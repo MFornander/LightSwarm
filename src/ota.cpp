@@ -3,14 +3,14 @@
 #include <ESP8266httpUpdate.h>
 #include <FS.h>
 
+#include "debug.h"
 #include "ota.h"
-
 
 #define CONFIG_NAME "/ota.json"
 #define CONFIG_SIZE 200
 
 namespace LightSwarm {
-
+#define Serial
 
 OTA::OTA()
 {
@@ -35,12 +35,12 @@ void OTA::RebootUpdate(const String& ssid, const String& pass, const String& hos
         configFile.close();
         SPIFFS.end();
 
-        Serial.println("[OTA] Rebooting in OTA mode...");
+        INFO("[OTA] Rebooting in OTA mode...");
         ESP.restart();
     }
 
 
-    Serial.println("[OTA] Failed to open config file for writing");
+    ERR("[OTA] Failed to open config file for writing\n");
 }
 
 
@@ -50,14 +50,14 @@ void OTA::TryUpdate()
     File configFile = SPIFFS.open(CONFIG_NAME, "r");
     if (!configFile)
     {
-        Serial.println("[OTA] No config file. Leaving OTA.");
+        INFO("[OTA] No config file. Leaving OTA.\n");
         return;
     }
 
     size_t size = configFile.size();
     if (size > CONFIG_SIZE)
     {
-       Serial.printf("[OTA] Config file size (%d) is too large (%d)\n", (int)size, CONFIG_SIZE);
+       ERR("[OTA] Config file size (%d) is too large (%d)\n", (int)size, CONFIG_SIZE);
        return;
     }
 
@@ -72,7 +72,7 @@ void OTA::TryUpdate()
 
     if (!config.success())
     {
-        Serial.println("[OTA] Failed to parse config file");
+        ERR("[OTA] Failed to parse config file\n");
         return;
     }
 
@@ -82,13 +82,13 @@ void OTA::TryUpdate()
     const char* path = config["path"];
 
 
-    Serial.printf("[OTA] Connecting to %s to fetch http://%s%s ...", ssid, host, path);
+    INFO("[OTA] Fetching http://%s%s over ssid=%s...", host, path, ssid);
 
     int retries = 10;
     wl_status_t status = WiFi.begin(ssid, pass);
     while (retries > 0 && status != WL_CONNECTED)
     {
-        Serial.print(".");
+        INFO(".");
         delay(1000);
         retries--;
         status = WiFi.status();
@@ -97,29 +97,29 @@ void OTA::TryUpdate()
 
     ESPhttpUpdate.rebootOnUpdate(false);
 
-    Serial.println("\n[OTA] Updating...");
+    INFO("\n[OTA] Updating...\n");
     auto reply = ESPhttpUpdate.update(host, 80, path); //, "optional current version string here"*/);
 
 
     switch (reply)
     {
         case HTTP_UPDATE_FAILED:
-            Serial.println("[OTA] Update failed");
+            ERR("[OTA] Update failed\n");
             break;
 
         case HTTP_UPDATE_NO_UPDATES:
-            Serial.println("[OTA] Update no updates");
+            ERR("[OTA] Update no updates\n");
             break;
 
         case HTTP_UPDATE_OK:
             SPIFFS.end();
 
-            Serial.println("[OTA] Update success.  Rebooting into new firmware...");
+            INFO("[OTA] Update success.  Rebooting into new firmware...\n");
             ESP.restart();
             break;
     }
 
-    Serial.println(ESPhttpUpdate.getLastErrorString());
+    INFO(ESPhttpUpdate.getLastErrorString().c_str());
 }
 
 } // namespace
