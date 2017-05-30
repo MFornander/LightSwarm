@@ -1,5 +1,6 @@
-#include "swarm.h"
 #include <functional>
+
+#include "network.h"
 
 #define   MESH_SSID       "whateverYouLike"
 #define   MESH_PASSWORD   "somethingSneaky"

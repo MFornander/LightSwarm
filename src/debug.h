@@ -1,9 +1,9 @@
 
-#ifndef __SWARMDEBUG__
-#define __SWARMDEBUG__
+#ifndef __SWARM_DEBUG_H__
+#define __SWARM_DEBUG_H__
 
 
-class SwarmDebug
+class SwarmDebug final
 {
 public:
     SwarmDebug();

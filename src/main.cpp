@@ -8,8 +8,9 @@
 #include <Ticker.h>
 
 #include "debug.h"
+#include "network.h"
 #include "ota.h"
-#include "swarm.h"
+
 
 SwarmDebug   debug;
 SwarmOTA     ota;
@@ -68,7 +69,7 @@ void debugFunc()
 
 void animate()
 {
-    fill_rainbow(leds, NUM_LEDS, swarm.GetTime() / (1000*10), 10);
+    fill_rainbow(leds, NUM_LEDS, swarm.GetTime() / (1000*4), -1);
 
     CRGB* one =   leds + NUM_LEDS;
     CRGB* two =   leds + NUM_LEDS*2;
@@ -76,12 +77,10 @@ void animate()
 
     for (int i = 0; i < NUM_LEDS; i++)
     {
-        one[i].red =    leds[i].red;
-        two[i].green =  leds[i].green;
-        three[i].blue = leds[i].blue;
+        one[i] =   leds[i];
+        two[i] =   leds[i];
+        three[i] = leds[i];
     }
-
-fill_rainbow(leds, NUM_LEDS*NUM_STRANDS, swarm.GetTime() / (1000*3), -1);
 }
 
 void loop()
