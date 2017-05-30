@@ -9,13 +9,16 @@
 #define CONFIG_NAME "/ota.json"
 #define CONFIG_SIZE 200
 
-SwarmOTA::SwarmOTA()
+namespace LightSwarm {
+
+
+OTA::OTA()
 {
     SPIFFS.begin();
 }
 
 
-void SwarmOTA::RebootUpdate(const String& ssid, const String& pass, const String& host, const String& path)
+void OTA::RebootUpdate(const String& ssid, const String& pass, const String& host, const String& path)
 {
     StaticJsonBuffer<CONFIG_SIZE> jsonBuffer;
     JsonObject& config = jsonBuffer.createObject();
@@ -42,7 +45,7 @@ void SwarmOTA::RebootUpdate(const String& ssid, const String& pass, const String
 
 
 
-void SwarmOTA::TryUpdate()
+void OTA::TryUpdate()
 {
     File configFile = SPIFFS.open(CONFIG_NAME, "r");
     if (!configFile)
@@ -118,3 +121,5 @@ void SwarmOTA::TryUpdate()
 
     Serial.println(ESPhttpUpdate.getLastErrorString());
 }
+
+} // namespace

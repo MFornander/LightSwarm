@@ -11,11 +11,13 @@
 #include "network.h"
 #include "ota.h"
 
+using namespace LightSwarm;
 
-SwarmDebug   debug;
-SwarmOTA     ota;
-SwarmNetwork swarm;
-Ticker       ticker;
+
+Debug   debug;
+OTA     ota;
+Network swarm;
+Ticker  ticker;
 
 #define NUM_LEDS 240
 #define NUM_STRANDS 4

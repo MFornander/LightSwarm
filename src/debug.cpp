@@ -2,10 +2,12 @@
 #include <Arduino.h>
 #include "debug.h"
 
-
 #define LED_BUILTIN 2
 
-SwarmDebug::SwarmDebug()
+namespace LightSwarm {
+
+
+Debug::Debug()
 {
     pinMode(LED_BUILTIN, OUTPUT);
     digitalWrite(LED_BUILTIN, LOW);
@@ -15,13 +17,13 @@ SwarmDebug::SwarmDebug()
     Serial.println("!");
 }
 
-void SwarmDebug::SetLed(bool on)
+void Debug::SetLed(bool on)
 {
     digitalWrite(LED_BUILTIN, on ? LOW : HIGH);
 
 }
 
-void SwarmDebug::Info(const char* format, ...)
+void Debug::Info(const char* format, ...)
 {
     char buffer[128];
     va_list args;
@@ -32,3 +34,5 @@ void SwarmDebug::Info(const char* format, ...)
 
     Serial.println(buffer);
 }
+
+} // namespace

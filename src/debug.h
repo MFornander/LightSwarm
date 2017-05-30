@@ -1,12 +1,12 @@
-
 #ifndef __SWARM_DEBUG_H__
 #define __SWARM_DEBUG_H__
 
+namespace LightSwarm {
 
-class SwarmDebug final
+class Debug final
 {
 public:
-    SwarmDebug();
+    Debug();
 
     void SetLed(bool on = true);
 
@@ -15,5 +15,6 @@ public:
     void Warn(const char* format, ...);
     void Error(const char* format, ...);
 };
+} // namespace
 
 #endif

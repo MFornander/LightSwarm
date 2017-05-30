@@ -2,12 +2,14 @@
 
 #include "network.h"
 
-#define   MESH_SSID       "whateverYouLike"
-#define   MESH_PASSWORD   "somethingSneaky"
-#define   MESH_PORT       5555
+#define MESH_SSID       "whateverYouLike"
+#define MESH_PASSWORD   "somethingSneaky"
+#define MESH_PORT       5555
+
+namespace LightSwarm {
 
 
-SwarmNetwork::SwarmNetwork()
+Network::Network()
 {
     using namespace std::placeholders;
 
@@ -17,25 +19,25 @@ SwarmNetwork::SwarmNetwork()
     //mesh.setDebugMsgTypes(ERROR | DEBUG | MESH_STATUS | CONNECTION | SYNC | COMMUNICATION | GENERAL | MSG_TYPES | REMOTE );
 
 
-    m_mesh.onReceive(             std::bind(&SwarmNetwork::ReceivedCallback, this, _1, _2));
-    m_mesh.onNewConnection(       std::bind(&SwarmNetwork::NewConnectionCallback, this, _1));
-    m_mesh.onChangedConnections(  std::bind(&SwarmNetwork::ChangedConnectionCallback, this));
-    m_mesh.onNodeTimeAdjusted(    std::bind(&SwarmNetwork::NodeTimeAdjustedCallback, this, _1));
-    m_mesh.onNodeDelayReceived(   std::bind(&SwarmNetwork::DelayReceivedCallback, this, _1, _2));
+    m_mesh.onReceive(             std::bind(&Network::ReceivedCallback, this, _1, _2));
+    m_mesh.onNewConnection(       std::bind(&Network::NewConnectionCallback, this, _1));
+    m_mesh.onChangedConnections(  std::bind(&Network::ChangedConnectionCallback, this));
+    m_mesh.onNodeTimeAdjusted(    std::bind(&Network::NodeTimeAdjustedCallback, this, _1));
+    m_mesh.onNodeDelayReceived(   std::bind(&Network::DelayReceivedCallback, this, _1, _2));
 
     randomSeed(analogRead(A0));
 }
 
-SwarmNetwork::~SwarmNetwork()
+Network::~Network()
 {
 }
 
-void SwarmNetwork::Init(uint8_t channel)
+void Network::Init(uint8_t channel)
 {
     m_mesh.init(MESH_SSID, MESH_PASSWORD, MESH_PORT, STA_AP, AUTH_WPA2_PSK, channel);
 }
 
-void SwarmNetwork::Update()
+void Network::Update()
 {
     m_mesh.update();
 
@@ -65,37 +67,37 @@ void SwarmNetwork::Update()
     }
 }
 
-uint32_t SwarmNetwork::GetTime()
+uint32_t Network::GetTime()
 {
     return m_mesh.getNodeTime();
 }
 
-uint32_t SwarmNetwork::GetNodeCount()
+uint32_t Network::GetNodeCount()
 {
     return m_mesh.getNodeList().size();
 }
 
-void SwarmNetwork::Broadcast(const String& message)
+void Network::Broadcast(const String& message)
 {
     m_mesh.sendBroadcast(const_cast<String&>(message));
 }
 
-void SwarmNetwork::SetReceived(ReceivedCallbackT callback)
+void Network::SetReceived(ReceivedCallbackT callback)
 {
     m_mesh.onReceive(callback);
 }
 
-void SwarmNetwork::ReceivedCallback(uint32_t from, String& msg)
+void Network::ReceivedCallback(uint32_t from, String& msg)
 {
     Serial.printf(NAME ": Received msg=%s\n", msg.c_str());
 }
 
-void SwarmNetwork::NewConnectionCallback(uint32_t nodeId)
+void Network::NewConnectionCallback(uint32_t nodeId)
 {
     Serial.printf("--> startHere: New Connection, nodeId = %u\n", nodeId);
 }
 
-void SwarmNetwork::ChangedConnectionCallback()
+void Network::ChangedConnectionCallback()
 {
     Serial.printf("Changed connections %s\n", m_mesh.subConnectionJson().c_str());
 
@@ -114,12 +116,14 @@ void SwarmNetwork::ChangedConnectionCallback()
     calc_delay = true;
 }
 
-void SwarmNetwork::NodeTimeAdjustedCallback(int32_t offset)
+void Network::NodeTimeAdjustedCallback(int32_t offset)
 {
     Serial.printf("Adjusted time %u. Offset = %d\n", m_mesh.getNodeTime(), offset);
 }
 
-void SwarmNetwork::DelayReceivedCallback(uint32_t from, int32_t delay)
+void Network::DelayReceivedCallback(uint32_t from, int32_t delay)
 {
     Serial.printf("Delay to node %u is %d us\n", from, delay);
 }
+
+} // namespace

@@ -1,14 +1,16 @@
-#ifndef __SWARM__
-#define __SWARM__
+#ifndef __SWARM_NETWORK_H__
+#define __SWARM_NETWORK_H__
 
 #include <painlessMesh.h>
 
+namespace LightSwarm {
 
-class SwarmNetwork final
+
+class Network final
 {
 public:
-    SwarmNetwork();
-    ~SwarmNetwork();
+    Network();
+    ~Network();
 
     void Init(uint8_t channel = 0);
     void Update();
@@ -27,10 +29,11 @@ private:
     void NodeTimeAdjustedCallback(int32_t offset);
     void DelayReceivedCallback(uint32_t from, int32_t delay);
 
-    painlessMesh m_mesh;
-    bool calc_delay = false;
-    SimpleList<uint32_t> nodes;
-    uint32_t sendMessageTime = 0;
+    painlessMesh          m_mesh;
+    bool                  calc_delay = false;
+    SimpleList<uint32_t>  nodes;
+    uint32_t              sendMessageTime = 0;
 };
+} // namespace
 
 #endif
