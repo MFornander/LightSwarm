@@ -2,6 +2,7 @@
 
 #include "debug.h"
 #include "network.h"
+#include "version.h"
 
 #define MESH_SSID       "whateverYouLike"
 #define MESH_PASSWORD   "somethingSneaky"
@@ -14,7 +15,7 @@ Network::Network()
     using namespace std::placeholders;
 
     // CAN THIS BE DONE IN THE CONSTRUCTOR???
-    m_mesh.setDebugMsgTypes(ERROR);
+    m_mesh.setDebugMsgTypes(ERROR | COMMUNICATION);
     //m_mesh.setDebugMsgTypes(ERROR | DEBUG | STARTUP | CONNECTION);  // set before init() so that you can see startup messages
     //mesh.setDebugMsgTypes(ERROR | DEBUG | MESH_STATUS | CONNECTION | SYNC | COMMUNICATION | GENERAL | MSG_TYPES | REMOTE );
 
@@ -43,21 +44,25 @@ void Network::Update()
 
     // get next random time for send message
     if (m_sendMessageTime == 0)
-    {
-        m_sendMessageTime = m_mesh.getNodeTime() + random(1000000, 5000000);
-        INFO("New SMT! smt=%u\n", m_sendMessageTime);
-    }
+        m_sendMessageTime = m_mesh.getNodeTime() + random(1000000, 5000000); // 1-5 sec
 
     // if the time is ripe, send everyone a message!
     if (m_sendMessageTime != 0 && (int)m_sendMessageTime - (int)m_mesh.getNodeTime() < 0)
     {
-        INFO("Broadcasting hello! smt=%d time=%d diff=%d\n",
+        m_helloCounter++;
+        INFO("[NET] Broadcasting hello! count=%u smt=%d time=%d diff=%d\n",
+            m_helloCounter,
             (int)m_sendMessageTime,
             (int)m_mesh.getNodeTime(),
             (int)m_sendMessageTime - (int)m_mesh.getNodeTime());
 
-        String msg = "Hello from ";
-        msg += String(m_mesh.getNodeId(), HEX);
+        String msg = "Hello #" +
+            String(m_helloCounter, DEC) +
+            " from=" +
+            String(m_mesh.getNodeId(), HEX) +
+            " build=" +
+            Version::BUILD;
+
         bool error = m_mesh.sendBroadcast(msg);
         m_sendMessageTime = 0;
 
@@ -84,6 +89,11 @@ uint32_t Network::GetNodeID()
 uint32_t Network::GetNodeCount()
 {
     return m_nodes.size();
+}
+
+uint32_t Network::GetStability()
+{
+    return m_mesh.stability;
 }
 
 void Network::Broadcast(const String& message)

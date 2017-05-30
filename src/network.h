@@ -17,6 +17,7 @@ public:
     uint32_t GetTime();
     uint32_t GetNodeID();
     uint32_t GetNodeCount();
+    uint32_t GetStability();
 
     using ReceivedCallbackT = std::function<void(uint32_t from, const String& msg)>;
     void Broadcast(const String& msg);
@@ -34,6 +35,7 @@ private:
     bool                  m_calcDelay = false;
     SimpleList<uint32_t>  m_nodes;
     uint32_t              m_sendMessageTime = 0;
+    uint32_t              m_helloCounter = 0;
 };
 } // namespace
 

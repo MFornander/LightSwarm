@@ -28,6 +28,7 @@ void OTA::RebootUpdate(const String& ssid, const String& pass, const String& hos
     config["host"] = host;
     config["path"] = path;
 
+    SPIFFS.remove(CONFIG_NAME);
     File configFile = SPIFFS.open(CONFIG_NAME, "w");
     if (configFile)
     {
@@ -38,7 +39,6 @@ void OTA::RebootUpdate(const String& ssid, const String& pass, const String& hos
         INFO("[OTA] Rebooting in OTA mode...");
         ESP.restart();
     }
-
 
     ERR("[OTA] Failed to open config file for writing\n");
 }

@@ -42,13 +42,13 @@ void DoOTA()
 
 void Receive(uint32_t from, const String& message)
 {
+    if (message == "ota")
+        ticker.attach(5, DoOTA);
+
     if (from == network.GetNodeID())
         return;
 
     INFO("[NET] Received from=%x msg=%s\n", from, message.c_str());
-
-    if (message == "ota")
-        ticker.attach(5, DoOTA);
 }
 
 
@@ -57,19 +57,20 @@ void debugFunc()
     EVERY_N_SECONDS(2)
     {
         debug.SetLed(true);
-        INFO("%s: id=%x fps=%d time=%x nodes=%u\n",
+        INFO("%s: id=%x fps=%d time=%x nodes=%u stab=%d\n",
             Version::BUILD,
             network.GetNodeID(),
             LEDS.getFPS(),
             network.GetTime(),
-            network.GetNodeCount() + 1);
+            network.GetNodeCount() + 1,
+            network.GetStability());
     }
 }
 
 
 void animate()
 {
-    fill_rainbow(leds, NUM_LEDS, network.GetTime() / (1000*4), -1);
+    fill_rainbow(leds, NUM_LEDS, network.GetTime() / (1000*4), -10);
 
     CRGB* one =   leds + NUM_LEDS;
     CRGB* two =   leds + NUM_LEDS*2;
@@ -125,8 +126,7 @@ void loop()
     {
         while (!digitalRead(WEMOS_BUTTON))
             delay(1);
-        network.Broadcast(String("ota"));
-
-        ticker.attach(5, DoOTA);
+        network.Broadcast("ota");
+        Receive(0, "ota");
     }
 }
