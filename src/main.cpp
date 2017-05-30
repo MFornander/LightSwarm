@@ -7,17 +7,21 @@
 #include <FastLED.h>
 #include <Ticker.h>
 
+#include "control.h"
 #include "debug.h"
 #include "network.h"
 #include "ota.h"
+#include "version.h"
 
 using namespace LightSwarm;
 
 
+Control control;
 Debug   debug;
+Network network;
 OTA     ota;
-Network swarm;
 Ticker  ticker;
+
 
 #define NUM_LEDS 240
 #define NUM_STRANDS 4
@@ -36,6 +40,7 @@ void DoOTA()
     ota.RebootUpdate(OTA_SSID, OTA_PASS, OTA_HOST, OTA_PATH);
 }
 
+
 void Receive(uint32_t from, String& message)
 {
     //Serial.printf(NAME ": Received msg=%s\n", message.c_str());
@@ -44,34 +49,23 @@ void Receive(uint32_t from, String& message)
         ticker.attach(5, DoOTA);
 }
 
-void setup()
-{
-    debug.Info("LightSwarm Node: " NAME);
-    ota.TryUpdate();
-
-    FastLED.addLeds<WS2811_PORTA, NUM_STRANDS, GRB>(leds, NUM_LEDS);
-    set_max_power_in_volts_and_milliamps(5, 4000);
-    memset8(leds, 0, NUM_LEDS*NUM_STRANDS*3);
-
-    swarm.Init();
-    swarm.SetReceived(&Receive);
-
-    pinMode(WEMOS_BUTTON, INPUT);
-}
 
 void debugFunc()
 {
     EVERY_N_SECONDS(2)
     {
         debug.SetLed(true);
-        debug.Info(NAME ": fps=%d time=%u nodes=%u",
-            LEDS.getFPS(), swarm.GetTime(), swarm.GetNodeCount());
+        debug.Info("%s: fps=%d time=%u nodes=%u",
+            Version::BUILD,
+            LEDS.getFPS(),
+            network.GetTime(),
+            network.GetNodeCount());
     }
 }
 
 void animate()
 {
-    fill_rainbow(leds, NUM_LEDS, swarm.GetTime() / (1000*4), -1);
+    fill_rainbow(leds, NUM_LEDS, network.GetTime() / (1000*4), -1);
 
     CRGB* one =   leds + NUM_LEDS;
     CRGB* two =   leds + NUM_LEDS*2;
@@ -85,10 +79,32 @@ void animate()
     }
 }
 
+
+
+void setup()
+{
+    debug.Info("LightSwarm %s", Version::BUILD);
+    ota.TryUpdate();
+
+
+
+    network.Init();
+    network.SetReceived(&Receive);
+
+    // TODO(mf): Remove and refactor this to a dedicated animation class
+    FastLED.addLeds<WS2811_PORTA, NUM_STRANDS, GRB>(leds, NUM_LEDS);
+    set_max_power_in_volts_and_milliamps(5, 4000);
+    memset8(leds, 0, NUM_LEDS*NUM_STRANDS*3);
+
+    // TODO(mf) Remove debug OTA hack
+    pinMode(WEMOS_BUTTON, INPUT);
+}
+
+
 void loop()
 {
     debugFunc();
-    swarm.Update();
+    network.Update();
 
     EVERY_N_MILLISECONDS(10)
     {
@@ -105,7 +121,7 @@ void loop()
     {
         while (!digitalRead(WEMOS_BUTTON))
             delay(1);
-        swarm.Broadcast(String("ota"));
+        network.Broadcast(String("ota"));
 
         ticker.attach(5, DoOTA);
     }

@@ -49,9 +49,9 @@ void Network::Update()
     if (sendMessageTime != 0 && (int)sendMessageTime - (int)m_mesh.getNodeTime() < 0)
     {
         // Cast to int in case of time rollover
-        String msg = "Hello from " NAME " ";
-        msg += m_mesh.getNodeId();
-//        bool error = m_mesh.sendBroadcast(msg);
+        String msg = "Hello from ";
+        msg += String(m_mesh.getNodeId(), HEX);
+        bool error = m_mesh.sendBroadcast(msg);
         sendMessageTime = 0;
 
         if (calc_delay)
@@ -89,12 +89,12 @@ void Network::SetReceived(ReceivedCallbackT callback)
 
 void Network::ReceivedCallback(uint32_t from, String& msg)
 {
-    Serial.printf(NAME ": Received msg=%s\n", msg.c_str());
+    Serial.printf("%x: Received msg=%s\n", m_mesh.getNodeId(), msg.c_str());
 }
 
 void Network::NewConnectionCallback(uint32_t nodeId)
 {
-    Serial.printf("--> startHere: New Connection, nodeId = %u\n", nodeId);
+    Serial.printf("--> startHere: New Connection, nodeId = %x\n", nodeId);
 }
 
 void Network::ChangedConnectionCallback()

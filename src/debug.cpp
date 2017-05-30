@@ -35,4 +35,11 @@ void Debug::Info(const char* format, ...)
     Serial.println(buffer);
 }
 
+
+Debug& Debug::GetSingleton()
+{
+    static Debug s_Debug;
+    return s_Debug;
+}
+
 } // namespace
