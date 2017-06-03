@@ -32,6 +32,7 @@ Ticker  ticker;
 CRGB       leds[NUM_LEDS*NUM_STRANDS];
 
 #define WEMOS_BUTTON D3
+#define WEMOS_RGB    D2
 
 
 void DoOTA()
@@ -72,15 +73,17 @@ void animate()
 {
     fill_rainbow(leds, NUM_LEDS, network.GetTime() / (1000*4), -10);
 
-    CRGB* one =   leds + NUM_LEDS;
-    CRGB* two =   leds + NUM_LEDS*2;
-    CRGB* three = leds + NUM_LEDS*3;
+    CRGB* s0 = leds + NUM_LEDS*0;
+    CRGB* s1 = leds + NUM_LEDS*1;
+    CRGB* s2 = leds + NUM_LEDS*2;
+    CRGB* s3 = leds + NUM_LEDS*3;
+
 
     for (int i = 0; i < NUM_LEDS; i++)
     {
-        one[i] =   leds[i];
-        two[i] =   leds[i];
-        three[i] = leds[i];
+        s1[i] = s0[i];
+        s2[i] = s0[i];
+        s3[i] = s0[i];
     }
 }
 
@@ -103,6 +106,7 @@ void setup()
 
     // TODO(mf) Remove debug OTA hack
     pinMode(WEMOS_BUTTON, INPUT);
+    pinMode(WEMOS_RGB, INPUT);
 }
 
 
