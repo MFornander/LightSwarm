@@ -30,17 +30,18 @@ void OTA::RebootUpdate(const String& ssid, const String& pass, const String& hos
 
     SPIFFS.remove(CONFIG_NAME);
     File configFile = SPIFFS.open(CONFIG_NAME, "w");
-    if (configFile)
+    if (!configFile)
     {
-        config.printTo(configFile);
-        configFile.close();
-        SPIFFS.end();
-
-        INFO("[OTA] Rebooting in OTA mode...");
-        ESP.restart();
+        ERR("[OTA] Failed to open config file for writing\n");
+        return;
     }
 
-    ERR("[OTA] Failed to open config file for writing\n");
+    config.printTo(configFile);
+    configFile.close();
+    SPIFFS.end();
+
+    INFO("[OTA] Rebooting in OTA mode...");
+    ESP.restart();
 }
 
 
