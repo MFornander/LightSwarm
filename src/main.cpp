@@ -1,4 +1,3 @@
-//#define FASTLED_FORCE_SOFTWARE_PINS
 //#define FASTLED_ALLOW_INTERRUPTS 0
 #define FASTLED_ESP8266_D1_PIN_ORDER
 #define FASTLED_INTERRUPT_RETRY_COUNT 0
@@ -71,7 +70,7 @@ void debugFunc()
 
 void animate()
 {
-    fill_rainbow(leds, NUM_LEDS, network.GetTime() / (1000*4), -10);
+    fill_rainbow(leds, NUM_LEDS, network.GetTime() / (1000*12), -1);
 
     CRGB* s0 = leds + NUM_LEDS*0;
     CRGB* s1 = leds + NUM_LEDS*1;
