@@ -121,14 +121,14 @@ void loop()
     debugFunc();
     network.Update();
 
-    EVERY_N_MILLISECONDS(10)
+    //EVERY_N_MILLISECONDS(10)
     {
         animate();
     }
 
     show_at_max_brightness_for_power();
 
-    delay(1);  // yield();
+    //delay(1);  // yield();
     debug.SetLed(false);
 
 
