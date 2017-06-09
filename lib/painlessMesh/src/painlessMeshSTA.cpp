@@ -182,7 +182,7 @@ void ICACHE_FLASH_ATTR StationScan::scanComplete(bss_info *bssInfo) {
         staticThis->debugMsg(CONNECTION, " MESH< ---");
         aps.push_back(*bssInfo);
         staticThis->debugMsg(CONNECTION, "\n");
-        bssInfo = bssInfo->next; //STAILQ_NEXT(bssInfo, next);
+        bssInfo = STAILQ_NEXT(bssInfo, next); // bssInfo->next; //
     }
     staticThis->debugMsg(CONNECTION, "\tFound % d nodes\n", aps.size());
 

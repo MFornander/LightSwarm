@@ -1,10 +1,14 @@
-//#define FASTLED_ALLOW_INTERRUPTS 0
+
 #define FASTLED_ESP8266_D1_PIN_ORDER
-#define FASTLED_INTERRUPT_RETRY_COUNT 0
+#define FASTLED_DEBUG_COUNT_FRAME_RETRIES
+//#define FASTLED_INTERRUPT_RETRY_COUNT 0
+//#define FASTLED_ALLOW_INTERRUPTS 0
+
 
 #include <Arduino.h>
 #include <FastLED.h>
 #include <Ticker.h>
+#include <ESP8266WiFi.h>
 
 #include "control.h"
 #include "debug.h"
@@ -28,7 +32,7 @@ Ticker  ticker;
 
 #define NUM_LEDS 240
 #define NUM_STRANDS 4
-CRGB       leds[NUM_LEDS*NUM_STRANDS];
+CRGB leds[NUM_LEDS*NUM_STRANDS];
 
 #define WEMOS_BUTTON D3
 #define WEMOS_RGB    D2
@@ -57,13 +61,15 @@ void debugFunc()
     EVERY_N_SECONDS(2)
     {
         debug.SetLed(true);
-        INFO("%s: id=%x fps=%d time=%x nodes=%u stab=%d\n",
+        INFO("%s: id=%x fps=%d time=%x nodes=%u stab=%d frame=%u retry=%u\n",
             Version::BUILD,
             network.GetNodeID(),
             LEDS.getFPS(),
             network.GetTime(),
             network.GetNodeCount() + 1,
-            network.GetStability());
+            network.GetStability(),
+            _frame_cnt,
+            _retry_cnt);
     }
 }
 
@@ -99,7 +105,8 @@ void setup()
     network.SetReceived(Receive);
 
     // TODO(mf): Remove and refactor this to a dedicated animation class
-    FastLED.addLeds<WS2811_PORTA, NUM_STRANDS, GRB>(leds, NUM_LEDS);
+    WiFi.setSleepMode(WIFI_NONE_SLEEP);
+    FastLED.addLeds<WS2813_PORTA, NUM_STRANDS, GRB>(leds, NUM_LEDS);
     set_max_power_in_volts_and_milliamps(5, 4000);
     memset8(leds, 0, NUM_LEDS*NUM_STRANDS*3);
 
