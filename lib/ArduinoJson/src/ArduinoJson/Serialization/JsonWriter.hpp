@@ -14,6 +14,7 @@
 #include "../Polyfills/attributes.hpp"
 #include "../Polyfills/math.hpp"
 #include "../Polyfills/normalize.hpp"
+#include "../TypeTraits/FloatTraits.hpp"
 
 namespace ArduinoJson {
 namespace Internals {
@@ -27,6 +28,10 @@ namespace Internals {
 // indentation.
 template <typename Print>
 class JsonWriter {
+  static const uint8_t maxDecimalPlaces = sizeof(JsonFloat) >= 8 ? 9 : 6;
+  static const uint32_t maxDecimalPart =
+      sizeof(JsonFloat) >= 8 ? 1000000000 : 1000000;
+
  public:
   explicit JsonWriter(Print &sink) : _sink(sink), _length(0) {}
 
@@ -82,7 +87,7 @@ class JsonWriter {
     }
   }
 
-  void writeFloat(JsonFloat value, uint8_t digits = 2) {
+  void writeFloat(JsonFloat value) {
     if (Polyfills::isNaN(value)) return writeRaw("NaN");
 
     if (value < 0.0) {
@@ -92,36 +97,12 @@ class JsonWriter {
 
     if (Polyfills::isInfinity(value)) return writeRaw("Infinity");
 
-    short powersOf10;
-    if (value > 1000 || value < 0.001) {
-      powersOf10 = Polyfills::normalize(value);
-    } else {
-      powersOf10 = 0;
-    }
+    uint32_t integralPart, decimalPart;
+    int16_t powersOf10;
+    splitFloat(value, integralPart, decimalPart, powersOf10);
 
-    // Round up last digit (so that print(1.999, 2) prints as "2.00")
-    value += getRoundingBias(digits);
-
-    // Extract the integer part of the value and print it
-    JsonUInt int_part = static_cast<JsonUInt>(value);
-    JsonFloat remainder = value - static_cast<JsonFloat>(int_part);
-    writeInteger(int_part);
-
-    // Print the decimal point, but only if there are digits beyond
-    if (digits > 0) {
-      writeRaw('.');
-    }
-
-    // Extract digits from the remainder one at a time
-    while (digits-- > 0) {
-      // Extract digit
-      remainder *= 10.0;
-      char currentDigit = char(remainder);
-      remainder -= static_cast<JsonFloat>(currentDigit);
-
-      // Print
-      writeRaw(char('0' + currentDigit));
-    }
+    writeInteger(integralPart);
+    if (decimalPart) writeDecimals(decimalPart, maxDecimalPlaces);
 
     if (powersOf10 < 0) {
       writeRaw("e-");
@@ -134,16 +115,41 @@ class JsonWriter {
     }
   }
 
-  void writeInteger(JsonUInt value) {
+  template <typename UInt>
+  void writeInteger(UInt value) {
     char buffer[22];
     char *ptr = buffer + sizeof(buffer) - 1;
 
     *ptr = 0;
     do {
-      *--ptr = static_cast<char>(value % 10 + '0');
-      value /= 10;
+      *--ptr = char(value % 10 + '0');
+      value = UInt(value / 10);
     } while (value);
 
+    writeRaw(ptr);
+  }
+
+  void writeDecimals(uint32_t value, int8_t width) {
+    // remove trailing zeros
+    while (value % 10 == 0 && width > 0) {
+      value /= 10;
+      width--;
+    }
+
+    // buffer should be big enough for all digits, the dot and the null
+    // terminator
+    char buffer[maxDecimalPlaces + 2];
+    char *ptr = buffer + sizeof(buffer) - 1;
+
+    // write the string in reverse order
+    *ptr = 0;
+    while (width--) {
+      *--ptr = char(value % 10 + '0');
+      value /= 10;
+    }
+    *--ptr = '.';
+
+    // and dump it in the right order
     writeRaw(ptr);
   }
 
@@ -161,24 +167,28 @@ class JsonWriter {
  private:
   JsonWriter &operator=(const JsonWriter &);  // cannot be assigned
 
-  static JsonFloat getLastDigit(uint8_t digits) {
-    // Designed as a compromise between code size and speed
-    switch (digits) {
-      case 0:
-        return 1e-0;
-      case 1:
-        return 1e-1;
-      case 2:
-        return 1e-2;
-      case 3:
-        return 1e-3;
-      default:
-        return getLastDigit(uint8_t(digits - 4)) * 1e-4;
-    }
-  }
+  void splitFloat(JsonFloat value, uint32_t &integralPart,
+                  uint32_t &decimalPart, int16_t &powersOf10) {
+    powersOf10 = Polyfills::normalize(value);
 
-  FORCE_INLINE static JsonFloat getRoundingBias(uint8_t digits) {
-    return 0.5 * getLastDigit(digits);
+    integralPart = uint32_t(value);
+    JsonFloat remainder = value - JsonFloat(integralPart);
+
+    remainder *= maxDecimalPart;
+    decimalPart = uint32_t(remainder);
+    remainder = remainder - JsonFloat(decimalPart);
+
+    // rounding:
+    // increment by 1 if remainder >= 0.5
+    decimalPart += uint32_t(remainder * 2);
+    if (decimalPart >= maxDecimalPart) {
+      decimalPart = 0;
+      integralPart++;
+      if (powersOf10 && integralPart >= 10) {
+        powersOf10++;
+        integralPart = 1;
+      }
+    }
   }
 };
 }

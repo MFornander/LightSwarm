@@ -58,6 +58,8 @@ double longitude   = root["data"][1];
 
 [See JsonParserExample.ino](examples/JsonParserExample/JsonParserExample.ino)
 
+Use [ArduinoJson Assistant](https://bblanchon.github.io/ArduinoJson/assistant/) to compute the buffer size.
+
 #### Encoding / Generating
 
 ```c++
@@ -68,8 +70,8 @@ root["sensor"] = "gps";
 root["time"] = 1351824120;
 
 JsonArray& data = root.createNestedArray("data");
-data.add(48.756080, 6);  // 6 is the number of decimals to print
-data.add(2.302038, 6);   // if not specified, 2 digits are printed
+data.add(48.756080);
+data.add(2.302038);
 
 root.printTo(Serial);
 // This prints:
@@ -77,6 +79,8 @@ root.printTo(Serial);
 ```
 
 [See JsonGeneratorExample.ino](examples/JsonGeneratorExample/JsonGeneratorExample.ino)
+
+Use [ArduinoJson Assistant](https://bblanchon.github.io/ArduinoJson/assistant/) to compute the buffer size.
 
 
 Documentation
@@ -112,6 +116,7 @@ Special thanks to the following persons and companies who made generous donation
 * Christoph Schmidt <img alt='Germany' src='https://cdnjs.cloudflare.com/ajax/libs/emojione/2.1.4/assets/svg/1f1e9-1f1ea.svg' width='18' height='18'>
 * OpenEVSE LLC <img alt='USA' src='https://cdnjs.cloudflare.com/ajax/libs/emojione/2.1.4/assets/svg/1f1fa-1f1f8.svg' width='18' height='18'>
 * Prokhoryatov Alexey <img alt='Russia' src='https://cdnjs.cloudflare.com/ajax/libs/emojione/2.1.4/assets/svg/1f1f7-1f1fa.svg' width='18' height='18'>
+* Google Inc. <img alt='USA' src='https://cdnjs.cloudflare.com/ajax/libs/emojione/2.1.4/assets/svg/1f1fa-1f1f8.svg' width='18' height='18'>
 
 ---
 

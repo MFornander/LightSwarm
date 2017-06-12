@@ -9,6 +9,7 @@
 
 #include <stdint.h>
 #include <stdlib.h>  // for size_t
+#include "../Configuration.hpp"
 #include "../Polyfills/math.hpp"
 
 namespace ArduinoJson {
@@ -17,7 +18,7 @@ namespace TypeTraits {
 template <typename T, size_t = sizeof(T)>
 struct FloatTraits {};
 
-#if !defined(__SIZEOF_DOUBLE__) || __SIZEOF_DOUBLE__ >= 8
+#if ARDUINOJSON_DOUBLE_IS_64BITS
 template <typename T>
 struct FloatTraits<T, 8 /*64bits*/> {
   typedef int64_t mantissa_type;
@@ -35,7 +36,7 @@ struct FloatTraits<T, 8 /*64bits*/> {
              (e & 8 ? 1e8 : 1) * (e & 16 ? 1e16 : 1) * (e & 32 ? 1e32 : 1) *
              (e & 64 ? 1e64 : 1) * (e & 128 ? 1e128 : 1) *
              (e & 256 ? 1e256 : 1);
-    e = -e;
+    e = TExponent(-e);
     return m * (e & 1 ? 1e-1 : 1) * (e & 2 ? 1e-2 : 1) * (e & 4 ? 1e-4 : 1) *
            (e & 8 ? 1e-8 : 1) * (e & 16 ? 1e-16 : 1) * (e & 32 ? 1e-32 : 1) *
            (e & 64 ? 1e-64 : 1) * (e & 128 ? 1e-128 : 1) *
@@ -43,11 +44,13 @@ struct FloatTraits<T, 8 /*64bits*/> {
   }
 
   static T nan() {
-    return Polyfills::nan<T>();
+    uint64_t x = uint64_t(0x7ff8) << 48;
+    return *reinterpret_cast<T*>(&x);
   }
 
   static T inf() {
-    return Polyfills::inf<T>();
+    uint64_t x = uint64_t(0x7ff0) << 48;
+    return *reinterpret_cast<T*>(&x);
   }
 };
 #endif
@@ -73,11 +76,13 @@ struct FloatTraits<T, 4 /*32bits*/> {
   }
 
   static T nan() {
-    return Polyfills::nan<T>();
+    uint32_t x = 0x7fc00000;
+    return *reinterpret_cast<T*>(&x);
   }
 
   static T inf() {
-    return Polyfills::inf<T>();
+    uint32_t x = 0x7f800000;
+    return *reinterpret_cast<T*>(&x);
   }
 };
 }
