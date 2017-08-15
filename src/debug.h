@@ -4,9 +4,9 @@
 
 namespace LightSwarm {
 
-#define INFO(...)  Debug::GetSingleton().Info(__VA_ARGS__)
-#define WARN(...)  Debug::GetSingleton().Warn(__VA_ARGS__)
-#define ERR(...)   Debug::GetSingleton().Error(__VA_ARGS__)
+#define INFO(...)  LightSwarm::Debug::GetSingleton().Info(__VA_ARGS__)
+#define WARN(...)  LightSwarm::Debug::GetSingleton().Warn(__VA_ARGS__)
+#define ERR(...)   LightSwarm::Debug::GetSingleton().Error(__VA_ARGS__)
 
 #define INFO_IF(cond, ...)  (!cond) ? (void)0 : INFO(__VA_ARGS__)
 #define WARN_IF(cond, ...)  (!cond) ? (void)0 : WARN(__VA_ARGS__)
