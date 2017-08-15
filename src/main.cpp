@@ -2,7 +2,7 @@
 #define FASTLED_ESP8266_D1_PIN_ORDER
 #define FASTLED_DEBUG_COUNT_FRAME_RETRIES
 //#define FASTLED_INTERRUPT_RETRY_COUNT 0
-//#define FASTLED_ALLOW_INTERRUPTS 0
+#define FASTLED_ALLOW_INTERRUPTS 0
 
 
 #include <Arduino.h>
@@ -76,7 +76,7 @@ void debugFunc()
 
 void animate()
 {
-    fill_rainbow(leds, NUM_LEDS, network.GetTime() / (1000*12), -1);
+    fill_rainbow(leds, NUM_LEDS, network.GetTime() / (1000*100), -1);
 
     CRGB* s0 = leds + NUM_LEDS*0;
     CRGB* s1 = leds + NUM_LEDS*1;
@@ -106,7 +106,7 @@ void setup()
 
     // TODO(mf): Remove and refactor this to a dedicated animation class
     WiFi.setSleepMode(WIFI_NONE_SLEEP);
-    FastLED.addLeds<WS2813_PORTA, NUM_STRANDS, GRB>(leds, NUM_LEDS);
+    FastLED.addLeds<WS2811_PORTA, NUM_STRANDS, GRB>(leds, NUM_LEDS);
     set_max_power_in_volts_and_milliamps(5, 4000);
     memset8(leds, 0, NUM_LEDS*NUM_STRANDS*3);
 
@@ -139,4 +139,7 @@ void loop()
         network.Broadcast("ota");
         Receive(0, "ota");
     }
+
+    delay(20);
+
 }
