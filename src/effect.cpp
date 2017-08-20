@@ -34,7 +34,10 @@ void CEffect::Effect_FallingStripe(uint32_t inTime, uint8_t* inArgs, CHAL::CStra
     //return;
 
     //inView->fill_solid(CRGB::Black);
-    (*inView)[inTime%inView->size()].setColorCode(CRGB::White);
+    int   theSparkLoc = (inTime%100) * inView->size() / 100;
+    (*inView)[theSparkLoc].setColorCode(CRGB::White);
+
+    //(*inView)[inTime%inView->size()].setColorCode(CRGB::White);
 
     //inView->operator[](inTime%inView->size()).setColorCode(CRGB::DeepPink);
     //inView->fill_gradient_RGB(CRGB::DeepPink, CRGB::Black, CRGB::Black);

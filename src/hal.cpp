@@ -53,32 +53,34 @@ void CHAL::InitConfig()
 
     INFO("UUID %x\n",theUUID);
 
-    const uint32_t  NODE_Jelly_0 = 0x00000000;
-    const uint32_t  NODE_Jelly_1 = 0x000001;
-    const uint32_t  NODE_Jelly_2 = 0x000002;
-    const uint32_t  NODE_Jelly_3 = 0x000003;
-    const uint32_t  NODE_Jelly_4 = 0x000004;
-    const uint32_t  NODE_Jelly_5 = 0x000005;
-    const uint32_t  NODE_Dong_0 = 0x7f3a9f79; //G
-    const uint32_t  NODE_Dong_1 = 0x7f3a2623; //A
-    const uint32_t  NODE_Dong_2 = 0x7f3a9b51; //F
-    const uint32_t  NODE_Dong_3 = 0x000009;
-    const uint32_t  NODE_Dong_4 = 0x000010;
+    const uint32_t  NODE_J0 = 0x7f3a2623; // J0
+    const uint32_t  NODE_J1 = 0x34cf4164; // J1
+    const uint32_t  NODE_J2 = 0x941eee8d; // J2
+    const uint32_t  NODE_J3 = 0x7f3ad0bc; // J3
+    const uint32_t  NODE_J4 = 0x7f3a37d1; // J4
+    const uint32_t  NODE_J5 = 0x7f3a9bd4; // J5
+    const uint32_t  NODE_D0 = 0x7f3a9c8b; // D0
+    const uint32_t  NODE_D1 = 0x7f3a9b51; // D1
+    const uint32_t  NODE_D2 = 0x7f0018a1; // D2
+    const uint32_t  NODE_D3 = 0x34d04e4e; // D3
+    const uint32_t  NODE_D4 = 0x7f3a9f79; // D4
+    const uint32_t  NODE_D5 = 0x34cf362a; // D5
 
     switch(theUUID)
     {
-        case NODE_Jelly_0: m_Config.m_Position = 0; m_Config.m_Type = ENodeType::Type_Jelly; m_Config.m_Name = "J0"; break;
-        case NODE_Jelly_1: m_Config.m_Position = 4; m_Config.m_Type = ENodeType::Type_Jelly; m_Config.m_Name = "J1"; break;
-        case NODE_Jelly_2: m_Config.m_Position = 8; m_Config.m_Type = ENodeType::Type_Jelly; m_Config.m_Name = "J2"; break;
-        case NODE_Jelly_3: m_Config.m_Position = 12; m_Config.m_Type = ENodeType::Type_Jelly; m_Config.m_Name = "J3"; break;
-        case NODE_Jelly_4: m_Config.m_Position = 16; m_Config.m_Type = ENodeType::Type_Jelly; m_Config.m_Name = "J4"; break;
-        case NODE_Jelly_5: m_Config.m_Position = 20; m_Config.m_Type = ENodeType::Type_Jelly; m_Config.m_Name = "J5"; break;
+        case NODE_J0: m_Config.m_Position = 0; m_Config.m_Type = ENodeType::Type_Jelly; m_Config.m_Name = "J0"; break;
+        case NODE_J1: m_Config.m_Position = 4; m_Config.m_Type = ENodeType::Type_Jelly; m_Config.m_Name = "J1"; break;
+        case NODE_J2: m_Config.m_Position = 8; m_Config.m_Type = ENodeType::Type_Jelly; m_Config.m_Name = "J2"; break;
+        case NODE_J3: m_Config.m_Position = 12; m_Config.m_Type = ENodeType::Type_Jelly; m_Config.m_Name = "J3"; break;
+        case NODE_J4: m_Config.m_Position = 16; m_Config.m_Type = ENodeType::Type_Jelly; m_Config.m_Name = "J4"; break;
+        case NODE_J5: m_Config.m_Position = 20; m_Config.m_Type = ENodeType::Type_Jelly; m_Config.m_Name = "J5"; break;
 
-        case NODE_Dong_0: m_Config.m_Position = 0; m_Config.m_Type = ENodeType::Type_Dong; m_Config.m_Name = "D0"; break;
-        case NODE_Dong_1: m_Config.m_Position = 4; m_Config.m_Type = ENodeType::Type_Dong; m_Config.m_Name = "D1"; break;
-        case NODE_Dong_2: m_Config.m_Position = 8; m_Config.m_Type = ENodeType::Type_Dong; m_Config.m_Name = "D2"; break;
-        case NODE_Dong_3: m_Config.m_Position = 12; m_Config.m_Type = ENodeType::Type_Dong; m_Config.m_Name = "D3"; break;
-        case NODE_Dong_4: m_Config.m_Position = 16; m_Config.m_Type = ENodeType::Type_Dong; m_Config.m_Name = "D4"; break;
+        case NODE_D0: m_Config.m_Position = 0; m_Config.m_Type = ENodeType::Type_Dong; m_Config.m_Name = "Beacon"; break;
+        case NODE_D1: m_Config.m_Position = 4; m_Config.m_Type = ENodeType::Type_Dong; m_Config.m_Name = "D1"; break;
+        case NODE_D2: m_Config.m_Position = 8; m_Config.m_Type = ENodeType::Type_Dong; m_Config.m_Name = "D2"; break;
+        case NODE_D3: m_Config.m_Position = 12; m_Config.m_Type = ENodeType::Type_Dong; m_Config.m_Name = "D3"; break;
+        case NODE_D4: m_Config.m_Position = 16; m_Config.m_Type = ENodeType::Type_Dong; m_Config.m_Name = "D4"; break;
+        case NODE_D5: m_Config.m_Position = 20; m_Config.m_Type = ENodeType::Type_Dong; m_Config.m_Name = "D5"; break;
 
         default: m_Config.m_Position = 0; m_Config.m_Type = ENodeType::Type_Other; m_Config.m_Name = "Unknown"; break;
     }
@@ -111,52 +113,6 @@ void CHAL::InitConfig()
         break;
     }
 }
-
-/*void CHAL::LoadConfig()
-{
-    InitConfig();
-
-    File configFile = SPIFFS.open("/node_config.json", "r");
-    if (!configFile)
-    {
-        INFO("[OTA] No config file, using defaults.\n");
-        return;
-    }
-
-    // Parse the Json from the file
-    size_t size = configFile.size();
-    std::unique_ptr<char[]> buf(new char[size]);
-    configFile.readBytes(buf.get(), size);
-    configFile.close();
-    DynamicJsonBuffer jsonBuffer;
-    JsonObject& root = jsonBuffer.parseObject(buf.get());
-    if (!root.success())
-    {
-        ERR("Failed to parse node config file\n");
-        return;
-    }
-
-    m_Config.m_Name = root["name"].as<String>();
-    m_Config.m_MilliampMax = root["milliampMax"];
-    m_Config.m_BackgroundLevel = root["backgroundLevel"];
-    m_Config.m_PhysicalStrandCount = root["physicalStrandCount"];
-    m_Config.m_PhysicalStrandLEDCount = root["physicalStrandLEDCount"];
-
-    INFO("CONFIG: %d, %d, %s, %d, %d, %d, %d\n",
-            m_Config.m_Position, m_Config.m_Type, m_Config.m_Name.c_str(),
-            m_Config.m_MilliampMax, m_Config.m_BackgroundLevel,
-            m_Config.m_PhysicalStrandCount, m_Config.m_PhysicalStrandLEDCount);
-
-    // Create the the start and end indices for the logical strands
-    JsonArray&  theStartEnds = root["strandViewStartEnd"];
-    m_StrandViewCount = theStartEnds.size();
-    for (int theLoop=0; theLoop < m_StrandViewCount; theLoop++)
-    {
-        SStartEnd theStartEnd = {theStartEnds[theLoop]["start"], theStartEnds[theLoop]["end"]};
-        m_Config.m_StrandViewStartEnd.push_back(theStartEnd);
-    }
-}
-*/
 
 const SNodeConfig& CHAL::GetConfig()
 {

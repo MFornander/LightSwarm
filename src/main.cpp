@@ -19,7 +19,8 @@ CPresentation   frontPres( "/effect3only.vunsq" );
 
 void report()
 {
-    INFO("%s: id=%x fps=%d time=%x nodes=%u stab=%d frame=%u retry=%u\n", Version::BUILD, network.GetNodeID(), LEDS.getFPS(), network.GetTime(), network.GetNodeCount() + 1, network.GetStability(), _frame_cnt, _retry_cnt);
+    debug.SetLed( network.GetNodeCount() == 0 );
+    INFO("%s: id=%x fps=%d time=%x nodes=%u stab=%d frame=%u retry=%u\n",Version::BUILD, network.GetNodeID(), LEDS.getFPS(), network.GetTime(), network.GetNodeCount() + 1, network.GetStability(), _frame_cnt, _retry_cnt);
 }
 
 void setup()
