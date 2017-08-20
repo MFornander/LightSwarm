@@ -4,43 +4,40 @@
 
 CVunsq::CVunsq()
 {
-	m_Presentation = nullptr;
-
 	// Set up the strands for this device
 	m_HAL.CreateStrandViews();
 	m_StrandCount = m_HAL.GetStrandViewCount();
-	m_Strands = new CStrand[m_StrandCount];
-	for (int16_t theStrandLoop = 0; theStrandLoop < m_StrandCount; theStrandLoop++)
-		m_Strands[theStrandLoop].SetView(m_HAL.GetStrandView(theStrandLoop));
 }
 
-void CVunsq::SetPresentation(CPresentation * inPresentation)
+void CVunsq::AddPresentation(CPresentation* inPresentation, int32_t inStrandOffset, uint8_t inBrightness)
 {
 	if ( inPresentation == nullptr )
 		return;
 
-	m_Presentation = inPresentation;
+    CStrand*                 theStrands = new CStrand[m_StrandCount];
 
-	// Connect each timeline of the presentation to the appropriate strand
-	for (int16_t theStrandLoop = 0; theStrandLoop < m_StrandCount; theStrandLoop++)
-		m_Strands[theStrandLoop].SetTimeline(inPresentation->CreateTimeline(theStrandLoop));
+    // Connect each timeline of the presentation to the appropriate strand
+    for (int16_t theStrandLoop = 0; theStrandLoop < m_StrandCount; theStrandLoop++)
+    {
+		theStrands[theStrandLoop].SetView(m_HAL.GetStrandView(theStrandLoop), inBrightness);
+        theStrands[theStrandLoop].SetTimeline(inPresentation->CreateTimeline(theStrandLoop+inStrandOffset));
+    }
+
+    SBinding    theBinding{inPresentation, theStrands};
+    m_Bindings.push_back(theBinding);
 
 	// Reset the timer for this presentation
-	m_HAL.ResetTime();
+	// TODO(mf): Implement:
+    //m_HAL.ResetTime();
 }
 
-void CVunsq::Step()
+void CVunsq::Step(uint32_t inTime)
 {
-	uint32_t	theTime = m_HAL.GetTime();
-
-	//std::cout << "TIME: " << theTime << std::endl;
-    INFO("TIME: %d\n", theTime);
-
-	// Connect each timeline of the presentation to the appropriate strand
-	for (int16_t theStrandLoop = 0; theStrandLoop < m_StrandCount; theStrandLoop++)
+    for (auto theBinding: m_Bindings)
     {
-        INFO("Strand %d: ", theStrandLoop);
-		m_Strands[theStrandLoop].Step(theTime);
+    	// Step the animation of each strand associated with this Presentation
+    	for (int16_t theStrandLoop = 0; theStrandLoop < m_StrandCount; theStrandLoop++)
+    		theBinding.m_Strands[theStrandLoop].Step(inTime);
     }
 
 	m_HAL.FlushLEDs();

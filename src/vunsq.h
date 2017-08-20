@@ -1,25 +1,32 @@
 #ifndef VUNSQ_H
 #define VUNSQ_H
 
-class CPresentation;
-
 #include "hal.h"
+#include "presentation.h"
 #include "strand.h"
+
+struct SBinding
+{
+    CPresentation*	m_Presentation;
+    CStrand*		m_Strands;
+};
 
 class CVunsq
 {
 	protected:
 		CHAL			m_HAL;
 		uint16_t		m_StrandCount;
-		CStrand*		m_Strands;
-		CPresentation*	m_Presentation;
+
+        SimpleList<SBinding>    m_Bindings;
+		//CStrand*		m_Strands;
+		//CPresentation*	m_Presentation;
 
     public:
         CVunsq();
 
-		void SetPresentation(CPresentation* inPresentation);
-		void Step();
-		
+		void AddPresentation(CPresentation* inPresentation, int32_t inStrandOffset, uint8_t inBrightness = 255);
+		void Step(uint32_t inTime);
+
 };
 
 #endif // VUNSQ_H

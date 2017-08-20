@@ -15,9 +15,10 @@ CStrand::~CStrand()
 		delete m_Timeline;
 }
 
-void CStrand::SetView(CHAL::CStrandView inView)
+void CStrand::SetView(CHAL::CStrandView inView, uint8_t inBrightness)
 {
 	m_View = inView;
+    m_Brightness = inBrightness;
 }
 
 void CStrand::SetTimeline(CTimeline* inTimeline)
@@ -35,7 +36,8 @@ void CStrand::Step(uint32_t inTime)
 	if (theNextEvent != nullptr)
 	{
 		m_Event = theNextEvent;
-		m_Effect = CEffect::GetEffect((CEffect::EEffectType)m_Event->m_EffectID);
+		m_Effect = CEffect::GetEffect((CEffect::EEffectType)(m_Event->m_EffectID+m_Brightness));
+        // ^^ HACK: above using the brightness as an incrementor into effects until we can create content
 	}
 
 	// Advance the current effect

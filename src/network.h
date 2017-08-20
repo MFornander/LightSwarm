@@ -16,6 +16,7 @@ public:
     void Update();
     uint32_t GetTime();
     uint32_t GetNodeID();
+    int32_t GetNodeOffset();
     uint32_t GetNodeCount();
     uint32_t GetStability();
 

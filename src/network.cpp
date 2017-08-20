@@ -85,6 +85,38 @@ uint32_t Network::GetNodeID()
     return m_mesh.getNodeId();
 }
 
+int32_t Network::GetNodeOffset()
+{
+    const uint32_t  NODE_Jelly_0 = 0x000000;
+    const uint32_t  NODE_Jelly_1 = 0x000001;
+    const uint32_t  NODE_Jelly_2 = 0x000002;
+    const uint32_t  NODE_Jelly_3 = 0x000003;
+    const uint32_t  NODE_Jelly_4 = 0x000004;
+    const uint32_t  NODE_Jelly_5 = 0x000005;
+    const uint32_t  NODE_Dong_0 = 0x000006;
+    const uint32_t  NODE_Dong_1 = 0x000007;
+    const uint32_t  NODE_Dong_2 = 0x000008;
+    const uint32_t  NODE_Dong_3 = 0x000009;
+    const uint32_t  NODE_Dong_4 = 0x000010;
+
+    switch(GetNodeID())
+    {
+        case NODE_Jelly_0: return 0;
+        case NODE_Jelly_1: return 4;
+        case NODE_Jelly_2: return 8;
+        case NODE_Jelly_3: return 12;
+        case NODE_Jelly_4: return 16;
+        case NODE_Jelly_5: return 20;
+
+        case NODE_Dong_0: return 0;
+        case NODE_Dong_1: return 4;
+        case NODE_Dong_2: return 8;
+        case NODE_Dong_3: return 12;
+        case NODE_Dong_4: return 16;
+
+        default: return 0;
+    }
+}
 
 uint32_t Network::GetNodeCount()
 {

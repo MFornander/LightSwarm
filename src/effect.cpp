@@ -30,12 +30,13 @@ CEffect::effect_function CEffect::GetEffect(EEffectType inType)
 void CEffect::Effect_FallingStripe(uint32_t inTime, uint8_t* inArgs, CHAL::CStrandView inView)
 {
     //INFO("Effect_FallingStripe\n");
+    //inView->fill_rainbow(inTime, 256.0f/inView->size());
+    //return;
 
-//    CRGB    theBlack(CRGB::Black);
+    //inView->fill_solid(CRGB::Black);
+    (*inView)[inTime%inView->size()].setColorCode(CRGB::White);
 
-    inView->fill_solid(CRGB::Black);
-    (*inView)[inTime%inView->size()].setColorCode(CRGB::DeepPink);
-//    inView->operator[](inTime%inView->size()).setColorCode(CRGB::DeepPink);
+    //inView->operator[](inTime%inView->size()).setColorCode(CRGB::DeepPink);
     //inView->fill_gradient_RGB(CRGB::DeepPink, CRGB::Black, CRGB::Black);
 
     //(*inView)(10, 20).fill_solid(CRGB::DeepPink);
@@ -51,8 +52,9 @@ void CEffect::Effect_FallingStripe(uint32_t inTime, uint8_t* inArgs, CHAL::CStra
 
 void CEffect::Effect_Gadoosh(uint32_t inTime, uint8_t* inArgs, CHAL::CStrandView inView)
 {
-    INFO("Effect_Gadoosh\n");
+    //INFO("Effect_Gadoosh\n");
     inView->fill_rainbow(inTime, 256.0f/inView->size());
+    inView->fadeLightBy(sin8_C(inTime)/2+100);
     /*
     uint8_t theDelta = 256.0f/inStrand->m_PixelCount;
 
@@ -70,12 +72,15 @@ void CEffect::Effect_Gadoosh(uint32_t inTime, uint8_t* inArgs, CHAL::CStrandView
 
 void CEffect::Effect_Pulse(uint32_t inTime, uint8_t* inArgs, CHAL::CStrandView inView)
 {
+    CHSV theColor(0, 255, inTime%255);
+
 	//std::cout << inStrand->m_Index << ": Pulse" << std::endl;
-    //INFO("%d: Effect_Pulse\n", inStrand->m_Index);
+    //INFO("Effect_Pulse\n");
+    inView->fill_solid(theColor);
 }
 
 void CEffect::Effect_NULLEffect(uint32_t inTime, uint8_t* inArgs, CHAL::CStrandView inView)
 {
 	//std::cout << inStrand->m_Index << ": NULL Effect" << std::endl;
-    //INFO("%d: Effect_NULLEffect\n", inStrand->m_Index);
+    //INFO("Effect_NULLEffect\n");
 }
