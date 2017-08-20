@@ -1,8 +1,3 @@
-#define FASTLED_ESP8266_D1_PIN_ORDER
-#define FASTLED_DEBUG_COUNT_FRAME_RETRIES
-#define FASTLED_INTERRUPT_RETRY_COUNT 0
-//#define FASTLED_ALLOW_INTERRUPTS 0
-
 #include "hal.h"
 
 #include <Arduino.h>
@@ -29,7 +24,6 @@ CHAL::CHAL()
 
 	// TODO(mf): Remove and refactor this to a dedicated animation class
 	WiFi.setSleepMode(WIFI_NONE_SLEEP);
-	set_max_power_in_volts_and_milliamps(5, 1600);
 
 	// TODO(mf) Remove debug OTA hack
 	pinMode(WEMOS_BUTTON, INPUT);
@@ -66,26 +60,26 @@ void CHAL::InitConfig()
     const uint32_t  NODE_D4 = 0x7f3a9f79; // D4
     const uint32_t  NODE_D5 = 0x34cf362a; // D5
 
-    switch(theUUID)
+    switch (theUUID)
     {
-        case NODE_J0: m_Config.m_Position = 0; m_Config.m_Type = ENodeType::Type_Jelly; m_Config.m_Name = "J0"; break;
-        case NODE_J1: m_Config.m_Position = 4; m_Config.m_Type = ENodeType::Type_Jelly; m_Config.m_Name = "J1"; break;
-        case NODE_J2: m_Config.m_Position = 8; m_Config.m_Type = ENodeType::Type_Jelly; m_Config.m_Name = "J2"; break;
+        case NODE_J0: m_Config.m_Position =  0; m_Config.m_Type = ENodeType::Type_Jelly; m_Config.m_Name = "J0"; break;
+        case NODE_J1: m_Config.m_Position =  4; m_Config.m_Type = ENodeType::Type_Jelly; m_Config.m_Name = "J1"; break;
+        case NODE_J2: m_Config.m_Position =  8; m_Config.m_Type = ENodeType::Type_Jelly; m_Config.m_Name = "J2"; break;
         case NODE_J3: m_Config.m_Position = 12; m_Config.m_Type = ENodeType::Type_Jelly; m_Config.m_Name = "J3"; break;
         case NODE_J4: m_Config.m_Position = 16; m_Config.m_Type = ENodeType::Type_Jelly; m_Config.m_Name = "J4"; break;
         case NODE_J5: m_Config.m_Position = 20; m_Config.m_Type = ENodeType::Type_Jelly; m_Config.m_Name = "J5"; break;
 
-        case NODE_D0: m_Config.m_Position = 0; m_Config.m_Type = ENodeType::Type_Dong; m_Config.m_Name = "Beacon"; break;
-        case NODE_D1: m_Config.m_Position = 4; m_Config.m_Type = ENodeType::Type_Dong; m_Config.m_Name = "D1"; break;
-        case NODE_D2: m_Config.m_Position = 8; m_Config.m_Type = ENodeType::Type_Dong; m_Config.m_Name = "D2"; break;
+        case NODE_D0: m_Config.m_Position =  0; m_Config.m_Type = ENodeType::Type_Dong; m_Config.m_Name = "Beacon"; break;
+        case NODE_D1: m_Config.m_Position =  4; m_Config.m_Type = ENodeType::Type_Dong; m_Config.m_Name = "D1"; break;
+        case NODE_D2: m_Config.m_Position =  8; m_Config.m_Type = ENodeType::Type_Dong; m_Config.m_Name = "D2"; break;
         case NODE_D3: m_Config.m_Position = 12; m_Config.m_Type = ENodeType::Type_Dong; m_Config.m_Name = "D3"; break;
         case NODE_D4: m_Config.m_Position = 16; m_Config.m_Type = ENodeType::Type_Dong; m_Config.m_Name = "D4"; break;
         case NODE_D5: m_Config.m_Position = 20; m_Config.m_Type = ENodeType::Type_Dong; m_Config.m_Name = "D5"; break;
 
-        default: m_Config.m_Position = 0; m_Config.m_Type = ENodeType::Type_Other; m_Config.m_Name = "Unknown"; break;
+        default: m_Config.m_Position      =  0; m_Config.m_Type = ENodeType::Type_Other; m_Config.m_Name = "Unknown"; break;
     }
 
-    switch(m_Config.m_Type)
+    switch (m_Config.m_Type)
     {
         case Type_Jelly:
             m_Config.m_MilliampMax = 4000;
@@ -121,6 +115,8 @@ const SNodeConfig& CHAL::GetConfig()
 
 void CHAL::CreateStrandViews()
 {
+    set_max_power_in_volts_and_milliamps(5, m_Config.m_MilliampMax);
+
     m_LEDBuffer = new CRGB[m_Config.m_PhysicalStrandCount*m_Config.m_PhysicalStrandLEDCount];
     switch (m_Config.m_PhysicalStrandCount)
     {

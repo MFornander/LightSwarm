@@ -1,6 +1,11 @@
 #ifndef HAL_H
 #define HAL_H
 
+#define FASTLED_ESP8266_D1_PIN_ORDER
+#define FASTLED_DEBUG_COUNT_FRAME_RETRIES
+#define FASTLED_INTERRUPT_RETRY_COUNT 0
+//#define FASTLED_ALLOW_INTERRUPTS 0
+
 #include <stdint.h>
 #include <SimpleList.h>
 #include <FastLED.h>

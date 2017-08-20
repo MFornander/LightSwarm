@@ -19,7 +19,6 @@ Network::Network()
     //m_mesh.setDebugMsgTypes(ERROR | DEBUG | STARTUP | CONNECTION);  // set before init() so that you can see startup messages
     //m_mesh.setDebugMsgTypes(ERROR | DEBUG | MESH_STATUS | CONNECTION | SYNC | COMMUNICATION | GENERAL | MSG_TYPES | REMOTE );
 
-
     m_mesh.onReceive(             std::bind(&Network::ReceivedCallback, this, _1, _2));
     m_mesh.onNewConnection(       std::bind(&Network::NewConnectionCallback, this, _1));
     m_mesh.onChangedConnections(  std::bind(&Network::ChangedConnectionCallback, this));
@@ -44,13 +43,13 @@ void Network::Update()
 
     // get next random time for send message
     if (m_sendMessageTime == 0)
-        m_sendMessageTime = m_mesh.getNodeTime() + random(1000000, 5000000); // 1-5 sec
+        m_sendMessageTime = m_mesh.getNodeTime() + random(5000000, 10000000); // 5-10 sec
 
     // if the time is ripe, send everyone a message!
     if (m_sendMessageTime != 0 && (int)m_sendMessageTime - (int)m_mesh.getNodeTime() < 0)
     {
         m_helloCounter++;
-        INFO("[NET] Broadcasting hello! count=%u smt=%d time=%d diff=%d\n",
+        INFO(" [NET] Broadcasting hello! count=%u smt=%d time=%d diff=%d\n",
             m_helloCounter,
             (int)m_sendMessageTime,
             (int)m_mesh.getNodeTime(),
@@ -58,7 +57,7 @@ void Network::Update()
 
         String msg = "Hello #" +
             String(m_helloCounter, DEC) +
-            " from=" +
+            " from-id=" +
             String(m_mesh.getNodeId(), HEX) +
             " build=" +
             Version::BUILD;
@@ -93,13 +92,13 @@ int32_t Network::GetNodeOffset()
     const uint32_t  NODE_Jelly_3 = 0x000003;
     const uint32_t  NODE_Jelly_4 = 0x000004;
     const uint32_t  NODE_Jelly_5 = 0x000005;
-    const uint32_t  NODE_Dong_0 = 0x000006;
-    const uint32_t  NODE_Dong_1 = 0x000007;
-    const uint32_t  NODE_Dong_2 = 0x000008;
-    const uint32_t  NODE_Dong_3 = 0x000009;
-    const uint32_t  NODE_Dong_4 = 0x000010;
+    const uint32_t  NODE_Dong_0  = 0x000006;
+    const uint32_t  NODE_Dong_1  = 0x000007;
+    const uint32_t  NODE_Dong_2  = 0x000008;
+    const uint32_t  NODE_Dong_3  = 0x000009;
+    const uint32_t  NODE_Dong_4  = 0x000010;
 
-    switch(GetNodeID())
+    switch (GetNodeID())
     {
         case NODE_Jelly_0: return 0;
         case NODE_Jelly_1: return 4;
@@ -140,20 +139,20 @@ void Network::SetReceived(ReceivedCallbackT callback)
 
 void Network::ReceivedCallback(uint32_t from, String& msg)
 {
-    INFO("[NET] %x: Received msg=%s\n", m_mesh.getNodeId(), msg.c_str());
+    INFO(" [NET] <%x>:  Received msg=%s\n", m_mesh.getNodeId(), msg.c_str());
 }
 
 void Network::NewConnectionCallback(uint32_t nodeId)
 {
-    INFO("[NET] New Connection, id=%x\n", nodeId);
+    INFO(" [NET] New Connection, id=%x\n", nodeId);
 }
 
 void Network::ChangedConnectionCallback()
 {
-    INFO("[NET] Changed connections %s\n", m_mesh.subConnectionJson().c_str());
+    INFO(" [NET] Changed connections %s\n", m_mesh.subConnectionJson().c_str());
 
     m_nodes = m_mesh.getNodeList();
-    INFO("[NET] Connection list (num=%d):", m_nodes.size());
+    INFO(" [NET] Connection list (num=%d):", m_nodes.size());
     for (auto node : m_nodes)
         INFO(" %x ", node);
     INFO("\n");
@@ -163,12 +162,12 @@ void Network::ChangedConnectionCallback()
 
 void Network::NodeTimeAdjustedCallback(int32_t offset)
 {
-    INFO("[NET] Adjusted time %x. Offset = %d\n", m_mesh.getNodeTime(), offset);
+    INFO(" [NET] Adjusted time %u. Offset = %d\n", m_mesh.getNodeTime(), offset);
 }
 
 void Network::DelayReceivedCallback(uint32_t from, int32_t delay)
 {
-    INFO("[NET] Delay to node %x is %d us\n", from, delay);
+    INFO(" [NET] Delay to node %x is %d us\n", from, delay);
 }
 
 } // namespace

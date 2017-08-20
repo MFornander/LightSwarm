@@ -1,8 +1,7 @@
-#define FASTLED_DEBUG_COUNT_FRAME_RETRIES
 #include <Arduino.h>
-#include <FastLED.h>
 #include <Ticker.h>
 
+#include "hal.h"
 #include "debug.h"
 #include "network.h"
 #include "presentation.h"
@@ -20,7 +19,7 @@ CPresentation   frontPres( "/effect3only.vunsq" );
 void report()
 {
     debug.SetLed( network.GetNodeCount() == 0 );
-    INFO("%s: id=%x fps=%d time=%x nodes=%u stab=%d frame=%u retry=%u\n",Version::BUILD, network.GetNodeID(), LEDS.getFPS(), network.GetTime(), network.GetNodeCount() + 1, network.GetStability(), _frame_cnt, _retry_cnt);
+    INFO("%s: id=<%x> fps=%d time=%x nodes=%u stab=%d frame=%u retry=%u\n",Version::BUILD, network.GetNodeID(), LEDS.getFPS(), network.GetTime(), network.GetNodeCount() + 1, network.GetStability(), _frame_cnt, _retry_cnt);
 }
 
 void setup()
