@@ -14,7 +14,7 @@ void CVunsq::AddPresentation(CPresentation* inPresentation, int32_t inStrandOffs
 	if ( inPresentation == nullptr )
 		return;
 
-    CStrand*                 theStrands = new CStrand[m_StrandCount];
+    CStrand*   theStrands = new CStrand[m_StrandCount];
 
     // Connect each timeline of the presentation to the appropriate strand
     for (int16_t theStrandLoop = 0; theStrandLoop < m_StrandCount; theStrandLoop++)

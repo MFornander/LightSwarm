@@ -36,7 +36,7 @@ void CStrand::Step(uint32_t inTime)
 	if (theNextEvent != nullptr)
 	{
 		m_Event = theNextEvent;
-		m_Effect = CEffect::GetEffect((CEffect::EEffectType)(m_Event->m_EffectID+m_Brightness));
+		m_Effect = CEffect::GetEffect(m_Event->m_EffectID+m_Brightness);
         // ^^ HACK: above using the brightness as an incrementor into effects until we can create content
 	}
 

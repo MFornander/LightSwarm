@@ -1,7 +1,6 @@
 #include "hal.h"
 
 #include <Arduino.h>
-#include <FastLED.h>
 #include <Ticker.h>
 #include <ESP8266WiFi.h>
 #include <FS.h>
@@ -98,10 +97,10 @@ void CHAL::InitConfig()
             m_Config.m_PhysicalStrandCount = 2;
             m_Config.m_PhysicalStrandLEDCount = 150;
             m_StrandViewCount = 4;
-            m_Config.m_StrandViewStartEnd.push_back({0, 74});
-            m_Config.m_StrandViewStartEnd.push_back({149, 75});
-            m_Config.m_StrandViewStartEnd.push_back({150, 224});
-            m_Config.m_StrandViewStartEnd.push_back({299, 225});
+            m_Config.m_StrandViewStartEnd.push_back({74, 0});
+            m_Config.m_StrandViewStartEnd.push_back({75, 149});
+            m_Config.m_StrandViewStartEnd.push_back({224, 150});
+            m_Config.m_StrandViewStartEnd.push_back({225, 299});
         break;
         default:
         break;

@@ -1,25 +1,30 @@
 #include "effect.h"
 #include "hal.h"
 #include "debug.h"
-#include <FastLED.h>
+#include <noise.h>
 
 CEffect::CEffect()
 {
-
 }
 
-CEffect::effect_function CEffect::GetEffect(EEffectType inType)
+CEffect::effect_function CEffect::GetEffect(int inType)
 {
 	switch (inType)
 	{
-		case EFallingStripe:
-			return Effect_FallingStripe;
+		case 3:
+			return Effect_Spark;
 			break;
-		case EGadoosh:
+		case 4:
+			return Effect_Rainbow;
+			break;
+		case 5:
 			return Effect_Gadoosh;
 			break;
-		case EPulse:
+		case 6:
 			return Effect_Pulse;
+			break;
+		case 7:
+			return Effect_Rain;
 			break;
 		default:
 			return Effect_NULLEffect;
@@ -27,34 +32,63 @@ CEffect::effect_function CEffect::GetEffect(EEffectType inType)
 	}
 }
 
-void CEffect::Effect_FallingStripe(uint32_t inTime, uint8_t* inArgs, CHAL::CStrandView inView)
+void CEffect::Effect_Spark(uint32_t inTime, uint8_t* inArgs, CHAL::CStrandView inView)
 {
-    //INFO("Effect_FallingStripe\n");
-    //inView->fill_rainbow(inTime, 256.0f/inView->size());
-    //return;
+    bool     theSparkForward = false;   // Get this later from Args
+    int      theSparkSpeed = 100; // Get this later from Args
 
-    //inView->fill_solid(CRGB::Black);
-    int   theSparkLoc = (inTime%100) * inView->size() / 100;
-    (*inView)[theSparkLoc].setColorCode(CRGB::White);
+    int     thePeriod = inTime/theSparkSpeed;
 
-    //(*inView)[inTime%inView->size()].setColorCode(CRGB::White);
+    // Calculate the location of the spark and slow it near the end
+    int   theSparkLoc = (inTime%theSparkSpeed) * inView->size() / theSparkSpeed;
 
-    //inView->operator[](inTime%inView->size()).setColorCode(CRGB::DeepPink);
-    //inView->fill_gradient_RGB(CRGB::DeepPink, CRGB::Black, CRGB::Black);
+    if (thePeriod % 3 == 0)
+    {
+        if (theSparkForward)
+            //(*inView)[theSparkLoc]*=CRGB::White;
+            (*inView)[theSparkLoc].setColorCode(CRGB::White);
+        else
+            //(*inView)[inView->size()-1-theSparkLoc]*=CRGB::White;
+            (*inView)[inView->size()-1-theSparkLoc].setColorCode(CRGB::White);
+    }
+}
 
-    //(*inView)(10, 20).fill_solid(CRGB::DeepPink);
-    //fill_gradient_RGB(CRGB::DeepPink, CRGB::Black);
-        //fill_gradient_RGB(inStrand->m_PixelBuffer, 0, theStart, 20, theEnd);
+void CEffect::Effect_Rainbow(uint32_t inTime, uint8_t* inArgs, CHAL::CStrandView inView)
+{
+    int     theRainbowMovementDir = -1;   // Get this later from Args
+    bool    thePulseFlag = true;   // Get this later from Args
 
-	//std::cout << inStrand->m_Index << ": Falling Stripe" << std::endl;
-    //INFO("%d: Effect_FallingStripe\n", inView->m_Index);
-    //fill_solid( inStrand->m_PixelBuffer, inStrand->m_PixelCount, theStart);
-    //fill_gradient_RGB(inStrand->m_PixelBuffer, 0, theStart, 20, theEnd);
-    //fill_gradient_RGB(inStrand->m_PixelBuffer, inTime%inStrand->m_PixelCount, theStart, (inTime+20)%inStrand->m_PixelCount, theEnd);
+    inView->fill_rainbow(inTime*theRainbowMovementDir, 256.0f/inView->size());
+
+    if (thePulseFlag)
+        inView->fadeLightBy(sin8_C(inTime)/2+100);
 }
 
 void CEffect::Effect_Gadoosh(uint32_t inTime, uint8_t* inArgs, CHAL::CStrandView inView)
 {
+    /*
+    const uint8_t kOctaves = 3;
+    const uint8_t kPosition = 1;
+    const int kScale = 1;
+    const uint16_t theTime = inTime/10;
+
+    CRGB perlin[inView->size()];
+    uint8_t raw[inView->size()];
+
+    memset(raw, 0, inView->size());
+    fill_raw_noise8(raw, inView->size(), kOctaves, kPosition, kScale, theTime);
+
+    for(int i = 0; i < inView->size(); i++)
+      perlin[i] = CHSV(0,0,raw[i]/3);
+
+    //inView->fill_solid(perlin[0]);
+
+    INFO("RGB:%u,%u,%u  oct:%u pos:%u scale:%u time:%u\n",
+        perlin[0].r, perlin[0].r,  perlin[0].r,
+        kOctaves, kPosition, kScale, theTime);
+    inView->operator=(CPixelView<CRGB>(perlin, inView->size()));
+return;*/
+
     //INFO("Effect_Gadoosh\n");
     inView->fill_rainbow(inTime, 256.0f/inView->size());
     inView->fadeLightBy(sin8_C(inTime)/2+100);
@@ -75,11 +109,50 @@ void CEffect::Effect_Gadoosh(uint32_t inTime, uint8_t* inArgs, CHAL::CStrandView
 
 void CEffect::Effect_Pulse(uint32_t inTime, uint8_t* inArgs, CHAL::CStrandView inView)
 {
-    CHSV theColor(0, 255, inTime%255);
+    CHSV theColor(70, 1, inTime%255);
 
 	//std::cout << inStrand->m_Index << ": Pulse" << std::endl;
     //INFO("Effect_Pulse\n");
     inView->fill_solid(theColor);
+}
+
+void CEffect::Effect_Rain(uint32_t inTime, uint8_t* inArgs, CHAL::CStrandView inView)
+{
+    //OLD RAIN
+    /*
+    	totalTime += frame.timeDelta;
+    	//cout << "total time: " << totalTime << "\n";
+
+    	int dropCount = 100 * Input(Pot1);
+    	float hueShift = Input(Pot2) - 0.5f;
+
+    	bool dropAdded = false;
+    	for (int dropIndex = 0; dropIndex < dropCount; ++dropIndex) {
+    		RainDrop& drop = mDrops[dropIndex];
+    		int led = 100 * (totalTime - drop.birth)  / 3 ;
+    		//cout << "led: " << led << "\n";
+    		if (led < 100 + drop.tail) {
+    			for (uint32_t tailIndex = 0; tailIndex < drop.tail; ++tailIndex) {
+    				float brightness = (255 - tailIndex * 255 / drop.tail) / 255.0f;
+    				int32_t newLed = led - tailIndex;
+    				if (newLed >= 0 && newLed < static_cast<int32_t>(JellyPixel::kLedCount)) {
+    					pixels[drop.strip][newLed].h = drop.hue;
+    					pixels[drop.strip][newLed].s = drop.saturation;
+    					pixels[drop.strip][newLed].v = brightness;
+    				}
+    			}
+    		}
+
+    		if (led >= 100 + drop.tail && !dropAdded && (random() & 0xF)) {
+    			drop.birth = totalTime;
+    			drop.strip = random() % JellyPixel::kStrandCount;
+    			drop.hue = (112 + random() % 96) / 255.0f + hueShift;
+    			drop.saturation = (64 + random() % 160 ) / 255.0f;
+    			drop.tail = 5 + random() % 40;
+    			dropAdded = true;
+    		}
+    	}
+    */
 }
 
 void CEffect::Effect_NULLEffect(uint32_t inTime, uint8_t* inArgs, CHAL::CStrandView inView)
