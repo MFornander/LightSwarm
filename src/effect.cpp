@@ -80,9 +80,9 @@ void CEffect::Effect_Gadoosh(uint32_t inTime, uint8_t* inArgs, CHAL::CStrandView
     }
 
 	//std::cout << inStrand->m_Index << ": Gadoosh" << std::endl;
-    INFO("%d: Effect_Gadoosh\n", inStrand->m_Index);
+	INFO("%d: Effect_Gadoosh\n", inStrand->m_Index);
 	fill_rainbow(inStrand->m_PixelBuffer, inStrand->m_PixelCount, inTime, theDelta);
-    */
+	*/
 }
 
 void CEffect::Effect_Pulse(uint32_t inTime, uint8_t* inArgs, CHAL::CStrandView inView)
@@ -163,5 +163,5 @@ void CEffect::Effect_PerlinTest(uint32_t inTime, uint8_t* inArgs, CHAL::CStrandV
 void CEffect::Effect_NULLEffect(uint32_t inTime, uint8_t* inArgs, CHAL::CStrandView inView)
 {
 	//std::cout << inStrand->m_Index << ": NULL Effect" << std::endl;
-    //INFO("Effect_NULLEffect\n");
+	//INFO("Effect_NULLEffect\n");
 }

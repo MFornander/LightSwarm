@@ -5,11 +5,10 @@ namespace LightSwarm {
 
 class Control final
 {
-public:
-    Control();
+    public:
+        Control();
 
-    void ProcessMessage(const String& message);
-
+        void ProcessMessage(const String& message);
 };
 } // namespace
 

@@ -12,7 +12,6 @@ Control::Control()
 void Control::ProcessMessage(const String& message)
 {
     INFO("Control: %s", message.c_str());
-
 }
 
 } // namespace

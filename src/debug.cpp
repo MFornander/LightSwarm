@@ -21,7 +21,6 @@ Debug::Debug()
 void Debug::SetLed(bool on)
 {
     digitalWrite(LED_BUILTIN, on ? LOW : HIGH);
-
 }
 
 void Debug::Info(const char* format, ...)

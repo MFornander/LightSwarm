@@ -18,15 +18,12 @@ class CVunsq
 		uint16_t		m_StrandCount;
 
         SimpleList<SBinding>    m_Bindings;
-		//CStrand*		m_Strands;
-		//CPresentation*	m_Presentation;
 
     public:
         CVunsq();
 
 		void AddPresentation(CPresentation* inPresentation, int32_t inStrandOffset, uint8_t inBrightness = 255);
 		void Step(uint32_t inTime);
-
 };
 
 #endif // VUNSQ_H
