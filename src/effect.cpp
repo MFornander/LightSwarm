@@ -3,6 +3,7 @@
 #include "debug.h"
 #include <noise.h>
 
+
 CEffect::CEffect()
 {
 }
@@ -34,10 +35,9 @@ CEffect::effect_function CEffect::GetEffect(int inType)
 
 void CEffect::Effect_Spark(uint32_t inTime, uint8_t* inArgs, CHAL::CStrandView inView)
 {
-    bool     theSparkForward = false;   // Get this later from Args
-    int      theSparkSpeed = 100; // Get this later from Args
-
-    int     thePeriod = inTime/theSparkSpeed;
+    bool  theSparkForward = false;   // Get this later from Args
+    int   theSparkSpeed = 100; // Get this later from Args
+    int   thePeriod = inTime/theSparkSpeed;
 
     // Calculate the location of the spark and slow it near the end
     int   theSparkLoc = (inTime%theSparkSpeed) * inView->size() / theSparkSpeed;
@@ -66,28 +66,6 @@ void CEffect::Effect_Rainbow(uint32_t inTime, uint8_t* inArgs, CHAL::CStrandView
 
 void CEffect::Effect_Gadoosh(uint32_t inTime, uint8_t* inArgs, CHAL::CStrandView inView)
 {
-    /*
-    const uint8_t kOctaves = 3;
-    const uint8_t kPosition = 1;
-    const int kScale = 1;
-    const uint16_t theTime = inTime/10;
-
-    CRGB perlin[inView->size()];
-    uint8_t raw[inView->size()];
-
-    memset(raw, 0, inView->size());
-    fill_raw_noise8(raw, inView->size(), kOctaves, kPosition, kScale, theTime);
-
-    for(int i = 0; i < inView->size(); i++)
-      perlin[i] = CHSV(0,0,raw[i]/3);
-
-    //inView->fill_solid(perlin[0]);
-
-    INFO("RGB:%u,%u,%u  oct:%u pos:%u scale:%u time:%u\n",
-        perlin[0].r, perlin[0].r,  perlin[0].r,
-        kOctaves, kPosition, kScale, theTime);
-    inView->operator=(CPixelView<CRGB>(perlin, inView->size()));
-return;*/
 
     //INFO("Effect_Gadoosh\n");
     inView->fill_rainbow(inTime, 256.0f/inView->size());
@@ -154,6 +132,33 @@ void CEffect::Effect_Rain(uint32_t inTime, uint8_t* inArgs, CHAL::CStrandView in
     	}
     */
 }
+
+void CEffect::Effect_PerlinTest(uint32_t inTime, uint8_t* inArgs, CHAL::CStrandView inView)
+{
+    const int ledCount = inView->size();
+    const uint8_t  kOctaves = 2;
+    const uint32_t kPosition = inTime*10;
+    const int      kScale = 2000;
+    const uint32_t theTime = inTime*500;
+
+    CRGB perlin[ledCount];
+    uint8_t raw[ledCount];
+
+    memset(raw, 0, ledCount);
+    fill_raw_noise16into8(raw, ledCount, kOctaves, kPosition, kScale, theTime);
+
+    for (int i = 0; i < ledCount; i++)
+        perlin[i] = ColorFromPalette( RainbowColors_p, raw[i], 31); //CHSV(0,0,raw[i]);
+
+    //inView->fill_solid(perlin[0]);
+
+    //INFO("RGB:%u,%u,%u  count:%d oct:%u pos:%u scale:%u time:%u\n",
+    //    perlin[0].r, perlin[0].g,  perlin[0].b,
+    //    ledCount, kOctaves, kPosition, kScale, theTime);
+
+    inView->operator=(CPixelView<CRGB>(perlin, ledCount));
+}
+
 
 void CEffect::Effect_NULLEffect(uint32_t inTime, uint8_t* inArgs, CHAL::CStrandView inView)
 {
