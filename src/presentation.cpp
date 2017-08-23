@@ -1,7 +1,20 @@
 #include "presentation.h"
+#include "timeline.h"
 #include "strand.h"
 #include "debug.h"
 #include <FS.h>
+
+CPresentation::CPresentation()
+{
+    // Create an empty presentation that we can add strands to in the future
+    m_Index = new SStrandEntry[MAX_PRESENTATION_STRANDS];
+    for (uint8_t theStrand = 0; theStrand < m_PresentationStrandCount; theStrand++)
+    {
+        m_Index[theStrand].m_Offset = 0;
+        m_Index[theStrand].m_ByteCount = 0;
+        m_Index[theStrand].m_Sequence = nullptr;
+    }
+}
 
 CPresentation::CPresentation(const String& inPresentationPath)
 {
@@ -11,12 +24,13 @@ CPresentation::CPresentation(const String& inPresentationPath)
         // Read the presentation header information: BPM, URI, StrandCount, StrandOffsets
         m_BPM = ReadFloat();
 		SkipString(); //Skip the URI
-		uint8_t theStrandCount = ReadByte();
-		m_Index = new SStrandEntry[theStrandCount];
-		for (uint8_t theStrand = 0; theStrand < theStrandCount; theStrand++)
+		m_PresentationStrandCount = ReadByte();
+		m_Index = new SStrandEntry[m_PresentationStrandCount];
+		for (uint8_t theStrand = 0; theStrand < m_PresentationStrandCount; theStrand++)
 		{
 			m_Index[theStrand].m_Offset = ReadULong();
 			m_Index[theStrand].m_ByteCount = ReadUShort();
+            m_Index[theStrand].m_Sequence = nullptr;
 		}
     }
     else
@@ -29,15 +43,45 @@ CPresentation::~CPresentation()
     m_Index = nullptr;
 }
 
+void CPresentation::CreateSequence(uint8_t inEffect, char*& outSequence, uint32_t& outByteCount)
+{
+    outByteCount = sizeof(uint32_t)+sizeof(SEvent);
+    outSequence = new char[outByteCount];
+	SEvent* theEvent = reinterpret_cast<SEvent*>(outSequence + sizeof(uint32_t));
+
+	reinterpret_cast<uint32_t*>(outSequence)[0] = 1; //EventCount
+    theEvent->m_EffectID = inEffect;
+	theEvent->m_Start=0;
+    theEvent->m_ArgCount = 0;
+    theEvent->m_Speed = 1.0f;
+}
+
+void CPresentation::AddStrand(char* inSequence, uint32_t inByteCount)
+{
+    if (m_PresentationStrandCount>=MAX_PRESENTATION_STRANDS)
+        return;
+    m_Index[m_PresentationStrandCount].m_ByteCount = inByteCount;
+    m_Index[m_PresentationStrandCount].m_Sequence = inSequence;
+
+    m_PresentationStrandCount++;
+}
 
 CTimeline* CPresentation::CreateTimeline(short inStrandIndex)
 {
-	// Jump to the location of this strand's timeline and read in the events as a single buffer
-    m_File.seek(m_Index[inStrandIndex].m_Offset, SeekSet);
-	char* theSequence = new char[m_Index[inStrandIndex].m_ByteCount];
-	ReadBytes(theSequence, m_Index[inStrandIndex].m_ByteCount);
+    // Wrap the stand index to the number of strands in this presentation
+    short   theWrappedIndex = inStrandIndex % m_PresentationStrandCount;
 
-	return new CTimeline(theSequence, m_Index[inStrandIndex].m_ByteCount);
+	// If this is from a file and we don't have the data yet then jump to the
+    // location of this strand's timeline and read in the events as a single
+    // buffer.  Cache for later
+    if (m_Index[theWrappedIndex].m_Sequence == nullptr && m_File)
+    {
+        m_File.seek(m_Index[theWrappedIndex].m_Offset, SeekSet);
+    	m_Index[theWrappedIndex].m_Sequence = new char[m_Index[theWrappedIndex].m_ByteCount];
+    	ReadBytes(m_Index[theWrappedIndex].m_Sequence, m_Index[theWrappedIndex].m_ByteCount);
+    }
+
+	return new CTimeline(m_Index[theWrappedIndex].m_Sequence, m_Index[theWrappedIndex].m_ByteCount);
 }
 
 // =============================================================================

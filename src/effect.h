@@ -19,6 +19,7 @@ class CEffect
 		static void Effect_Pulse(uint32_t inTime, uint8_t* inArgs, CHAL::CStrandView inView);
 		static void Effect_Rain(uint32_t inTime, uint8_t* inArgs, CHAL::CStrandView inView);
     	static void Effect_PerlinTest(uint32_t inTime, uint8_t* inArgs, CHAL::CStrandView inView);
+		static void Effect_Spark2(uint32_t inTime, uint8_t* inArgs, CHAL::CStrandView inView);
 		static void Effect_NULLEffect(uint32_t inTime, uint8_t* inArgs, CHAL::CStrandView inView);
 };
 

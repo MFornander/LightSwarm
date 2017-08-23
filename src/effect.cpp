@@ -27,6 +27,9 @@ CEffect::effect_function CEffect::GetEffect(int inType)
 		case 7:
 			return Effect_Rain;
 			break;
+		case 8:
+			return Effect_Spark2;
+			break;
 		default:
 			return Effect_NULLEffect;
 			break;
@@ -50,6 +53,26 @@ void CEffect::Effect_Spark(uint32_t inTime, uint8_t* inArgs, CHAL::CStrandView i
         else
             //(*inView)[inView->size()-1-theSparkLoc]*=CRGB::White;
             (*inView)[inView->size()-1-theSparkLoc].setColorCode(CRGB::White);
+    }
+}
+
+void CEffect::Effect_Spark2(uint32_t inTime, uint8_t* inArgs, CHAL::CStrandView inView)
+{
+    bool  theSparkForward = false;   // Get this later from Args
+    int   theSparkSpeed = 69; // Get this later from Args
+    int   thePeriod = inTime/theSparkSpeed;
+
+    // Calculate the location of the spark and slow it near the end
+    int   theSparkLoc = (inTime%theSparkSpeed) * inView->size() / theSparkSpeed;
+
+    if (thePeriod % 1 == 0)
+    {
+        if (theSparkForward)
+            //(*inView)[theSparkLoc]*=CRGB::White;
+            (*inView)[theSparkLoc].setColorCode(CRGB::DeepPink);
+        else
+            //(*inView)[inView->size()-1-theSparkLoc]*=CRGB::White;
+            (*inView)[inView->size()-1-theSparkLoc].setColorCode(CRGB::DeepPink);
     }
 }
 
