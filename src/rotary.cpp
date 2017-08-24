@@ -1,82 +1,57 @@
-//
-// RotaryEncoder.cpp
-//
-
 #include <Arduino.h>
 #include "rotary.h"
 
-RotaryEncoder::RotaryEncoder(OptPin gnd, OptPin vcc, OptPin sw, Pin dt, Pin clk) :
-               gndPin(gnd),
-               vccPin(vcc),
-               swPin(sw),
-               dtPin(dt),
-               clkPin(clk),
-               maxBias(1),
-               bias(1),
-               clk(false),
-               dt(false) {
-} // RotaryEncoder::RotaryEncoder(gnd, vcc, sw, dt, clk)
+namespace LightSwarm {
 
-void RotaryEncoder::Begin(byte maxBias)
+RotaryEncoder::RotaryEncoder(int dt, int clk, int sw) :
+    dtPin(dt),
+    clkPin(clk),
+    swPin(sw)
+{}
+
+void RotaryEncoder::Begin(byte inMaxBias)
 {
-   this->maxBias = maxBias;
-   if (gndPin!=NoPin)
-   {
-      pinMode(gndPin, OUTPUT); // Let's power the device,
-      digitalWrite(gndPin, LOW);  // Power -ve with 0
-   } // if
-   if (vccPin!=NoPin)
-   {
-      pinMode(vccPin, OUTPUT); // ,with both - and +
-      digitalWrite(vccPin, HIGH); // Power +ve with 1
-   } // if
-   if (swPin!=NoPin)
-   {
-      pinMode(swPin, INPUT_PULLUP); // They pushed it!
-   } // if
-   pinMode(dtPin,  INPUT); // One half
-   pinMode(clkPin, INPUT); // The other half
-} // RotaryEncoder::Begin(maxBias)
+    maxBias = inMaxBias;
+    pinMode(swPin, INPUT_PULLUP);
+    pinMode(dtPin,  INPUT); 
+    pinMode(clkPin, INPUT);
+}
 
 bool RotaryEncoder::Switch() const
 {
-   return swPin!=NoPin ?
-          digitalRead(swPin)==LOW :
-          false;
-} // RotaryEncoder::Switch()
+    return digitalRead(swPin) == LOW;
+}
 
-int RotaryEncoder::Get() {
-   bool clkNew = digitalRead(clkPin);
-   if (clk!=clkNew)
-   {
-      clk = clkNew; // Clock's changed; sample data
-      bool dtNew = digitalRead(dtPin);
-      if (dt!=dtNew)
-      {
-         dt = dtNew; // Data's changed; remember it!
-         //if (clk)
-         {  // Only pay attention to Clk Low-High
-            int temp = bias;
-            bias = maxBias;
-            if (dt^clk)
-            {
-               return -temp;
-            } // if
-            else
-            {
-               return +temp;
-            } // else
-         } // if
-      } // if
-   } // if
-   return 0;
-} // RotaryEncoder::Get()
-
-void RotaryEncoder::Rebias(int delta)
+int RotaryEncoder::Get()
 {
-   if (bias<=1)
-   {
+    bool clkNew = digitalRead(clkPin);
+    if (clk != clkNew)
+    {
+        clk = clkNew; // Clock's changed; sample data
+        bool dtNew = digitalRead(dtPin);
+        if (dt != dtNew)
+        {
+            dt = dtNew; // Data's changed; remember it
+            if (clk)
+            {
+                int temp = bias;
+                bias = maxBias;
+                if (dt)
+                    return temp;
+                else
+                    return -temp;
+            }
+        }
+    }
+    return 0;
+}
+
+void RotaryEncoder::Rebias(int inDelta)
+{
+   if (bias <= 1)
        return;
-   } // if
-   bias -= bias>delta ? delta : bias-1;
-} // RotaryEncoder::Rebias()
+       
+   bias -= bias > inDelta ? inDelta : bias - 1;
+}
+
+}

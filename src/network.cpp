@@ -41,6 +41,7 @@ void Network::Update()
 {
     m_mesh.update();
 
+
     // get next random time for send message
     if (m_sendMessageTime == 0)
         m_sendMessageTime = m_mesh.getNodeTime() + random(5000000, 10000000); // 5-10 sec
@@ -48,7 +49,9 @@ void Network::Update()
     // if the time is ripe, send everyone a message!
     if (m_sendMessageTime != 0 && (int)m_sendMessageTime - (int)m_mesh.getNodeTime() < 0)
     {
+
         m_helloCounter++;
+#if 0
         INFO(" [NET] Broadcasting hello! count=%u smt=%d time=%d diff=%d\n",
             m_helloCounter,
             (int)m_sendMessageTime,
@@ -63,6 +66,7 @@ void Network::Update()
             Version::BUILD;
 
         bool error = m_mesh.sendBroadcast(msg);
+#endif
         m_sendMessageTime = 0;
 
         if (m_calcDelay)

@@ -52,12 +52,15 @@ void CHAL::InitConfig()
     const uint32_t  NODE_J3 = 0x7f3ad0bc; // J3
     const uint32_t  NODE_J4 = 0x7f3a37d1; // J4
     const uint32_t  NODE_J5 = 0x7f3a9bd4; // J5
+    
     const uint32_t  NODE_D0 = 0x7f3a9c8b; // D0
     const uint32_t  NODE_D1 = 0x7f3a9b51; // D1
     const uint32_t  NODE_D2 = 0x7f0018a1; // D2
     const uint32_t  NODE_D3 = 0x34d04e4e; // D3
     const uint32_t  NODE_D4 = 0x7f3a9f79; // D4
     const uint32_t  NODE_D5 = 0x34cf362a; // D5
+    
+    const uint32_t  NODE_D6 = 0x7f3a9bb1; // D6
 
     switch (theUUID)
     {
@@ -67,7 +70,7 @@ void CHAL::InitConfig()
         case NODE_J3: m_Config.m_Position = 12; m_Config.m_Type = ENodeType::Type_Jelly; m_Config.m_Name = "J3"; break;
         case NODE_J4: m_Config.m_Position = 16; m_Config.m_Type = ENodeType::Type_Jelly; m_Config.m_Name = "J4"; break;
         case NODE_J5: m_Config.m_Position = 20; m_Config.m_Type = ENodeType::Type_Jelly; m_Config.m_Name = "J5"; break;
-
+        
         case NODE_D0: m_Config.m_Position =  0; m_Config.m_Type = ENodeType::Type_Dong; m_Config.m_Name = "Beacon"; break;
         case NODE_D1: m_Config.m_Position =  4; m_Config.m_Type = ENodeType::Type_Dong; m_Config.m_Name = "D1"; break;
         case NODE_D2: m_Config.m_Position =  8; m_Config.m_Type = ENodeType::Type_Dong; m_Config.m_Name = "D2"; break;
@@ -75,6 +78,8 @@ void CHAL::InitConfig()
         case NODE_D4: m_Config.m_Position = 16; m_Config.m_Type = ENodeType::Type_Dong; m_Config.m_Name = "D4"; break;
         case NODE_D5: m_Config.m_Position = 20; m_Config.m_Type = ENodeType::Type_Dong; m_Config.m_Name = "D5"; break;
 
+        case NODE_D6: m_Config.m_Position = 20; m_Config.m_Type = ENodeType::Type_Dong; m_Config.m_Name = "D6"; break;
+        
         default: m_Config.m_Position      =  0; m_Config.m_Type = ENodeType::Type_Other; m_Config.m_Name = "Unknown"; break;
     }
 
