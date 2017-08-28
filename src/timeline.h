@@ -5,6 +5,7 @@
 
 namespace LightSwarm {
 
+
 //TODO under GCC try struct __attribute__ ((packed))
 #pragma pack(push, 1)
 struct SEvent
@@ -17,19 +18,20 @@ struct SEvent
 };
 #pragma pack(pop)
 
-class CTimeline
+class CTimeline final
 {
-	protected:
-		char*		m_Sequence;
-		uint32_t	m_SequenceByteCount;
-		uint32_t	m_EventCount;
-		SEvent*		m_NextEvent;
 
-	public:
-		CTimeline(char* inSequence, uint32_t inByteCount);
-		virtual ~CTimeline();
+public:
+	CTimeline(char* inSequence, uint32_t inByteCount);
+	~CTimeline();
 
-		SEvent* NextEvent(uint32_t inTime);
+	SEvent* NextEvent(uint32_t inTime);
+
+protected:
+	char*		m_Sequence = nullptr;
+	uint32_t	m_SequenceByteCount;
+	uint32_t	m_EventCount;
+	SEvent*		m_NextEvent;
 };
 }
 

@@ -14,7 +14,7 @@ CVunsq::CVunsq()
 
 void CVunsq::AddPresentation(CPresentation* inPresentation, int32_t inStrandOffset, uint8_t inBrightness)
 {
-	if ( inPresentation == nullptr )
+	if (inPresentation == nullptr)
 		return;
 
 	CStrand*   theStrands = new CStrand[m_StrandCount];
@@ -33,6 +33,19 @@ void CVunsq::AddPresentation(CPresentation* inPresentation, int32_t inStrandOffs
 	// TODO(mf): Implement:
 	//m_HAL.ResetTime();
 }
+
+void CVunsq::FreePresentations()
+{
+	for (auto theBinding: m_Bindings)
+	{
+
+		delete theBinding.m_Presentation;
+		delete [] theBinding.m_Strands;
+	}
+
+	m_Bindings.clear();
+}
+
 
 void CVunsq::Step(uint32_t inTime)
 {

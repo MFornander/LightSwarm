@@ -19,6 +19,10 @@ Control::Control(Network& inNetwork, RotaryEncoder& inEncoder, CVunsq& inPlayer)
 	m_Encoder.Begin(5);
 
 	m_SwitchTime = millis();
+
+	const int kStartAnimation = 1;
+	m_CurrrentAnimation = kStartAnimation + 1;
+	SelectAnimation(kStartAnimation);
 }
 
 
@@ -74,6 +78,7 @@ void Control::OnClick(uint32_t inMillisDown)
 void Control::OnTurn(int inDelta)
 {
 	INFO(" [CTRL] Turn value=%u delta=%d\n", m_Value, inDelta);
+	SelectAnimation(m_Value);
 }
 
 
@@ -87,6 +92,59 @@ void Control::Broadcast(const String& inMessage)
 {
 	//INFO(" [CTRL] <%x>:  Sending=%s\n", inMessage.c_str());
 	m_Network.Broadcast(inMessage);
+}
+
+void Control::SelectAnimation(int inIndex)
+{
+	const int kPresentationCount = 2;
+	inIndex %= kPresentationCount;
+
+	if (inIndex == m_CurrrentAnimation)
+		return;
+	m_CurrrentAnimation = inIndex;
+
+
+	m_Player.FreePresentations();
+
+	char*			theSequence;
+	uint32_t		theByteCount;
+	CPresentation*  thePresentation;
+
+
+	inIndex %= kPresentationCount;
+	INFO(" [CTRL] Switching to pres=%u\n", inIndex);
+	switch (inIndex)
+	{
+		case 1:
+		{
+			thePresentation  = new CPresentation();
+			CPresentation::CreateSequence(9, theSequence, theByteCount);
+			thePresentation->AddStrand(theSequence, theByteCount);
+			m_Player.AddPresentation(thePresentation, m_Network.GetNodeOffset());
+
+			break;
+		}
+
+		default:
+		{
+			CPresentation::CreateSequence(4, theSequence, theByteCount);
+			thePresentation  = new CPresentation();
+			thePresentation->AddStrand(theSequence, theByteCount);
+			m_Player.AddPresentation(thePresentation, m_Network.GetNodeOffset());
+
+			CPresentation::CreateSequence(3, theSequence, theByteCount);
+			thePresentation = new CPresentation();
+			thePresentation->AddStrand(theSequence, theByteCount);
+			m_Player.AddPresentation(thePresentation, m_Network.GetNodeOffset());
+
+			CPresentation::CreateSequence(8, theSequence, theByteCount);
+			thePresentation  = new CPresentation();
+			thePresentation->AddStrand(theSequence, theByteCount);
+			m_Player.AddPresentation(thePresentation, m_Network.GetNodeOffset());
+
+			break;
+		}
+	}
 }
 
 } // namespace

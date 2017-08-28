@@ -19,6 +19,7 @@ CPresentation::CPresentation()
 	}
 }
 
+
 CPresentation::CPresentation(const String& inPresentationPath)
 {
 	m_File = SPIFFS.open(inPresentationPath, "r");
@@ -40,11 +41,16 @@ CPresentation::CPresentation(const String& inPresentationPath)
 		ERR("Unable to open the file=%s", inPresentationPath.c_str());
 }
 
+
 CPresentation::~CPresentation()
 {
+	for (uint8_t theStrand = 0; theStrand < m_PresentationStrandCount; theStrand++)
+		delete [] m_Index[theStrand].m_Sequence;
+
 	delete [] m_Index;
 	m_Index = nullptr;
 }
+
 
 void CPresentation::CreateSequence(uint8_t inEffect, char*& outSequence, uint32_t& outByteCount)
 {
@@ -59,6 +65,7 @@ void CPresentation::CreateSequence(uint8_t inEffect, char*& outSequence, uint32_
 	theEvent->m_Speed = 1.0f;
 }
 
+
 void CPresentation::AddStrand(char* inSequence, uint32_t inByteCount)
 {
 	if (m_PresentationStrandCount>=MAX_PRESENTATION_STRANDS)
@@ -69,6 +76,7 @@ void CPresentation::AddStrand(char* inSequence, uint32_t inByteCount)
 
 	m_PresentationStrandCount++;
 }
+
 
 CTimeline* CPresentation::CreateTimeline(short inStrandIndex)
 {
@@ -87,6 +95,7 @@ CTimeline* CPresentation::CreateTimeline(short inStrandIndex)
 
 	return new CTimeline(m_Index[theWrappedIndex].m_Sequence, m_Index[theWrappedIndex].m_ByteCount);
 }
+
 
 // =============================================================================
 // Private stream reading functions

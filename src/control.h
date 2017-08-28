@@ -26,6 +26,7 @@ public:
 protected:
 	void ReadEncoder();
 	void Broadcast(const String& inMessage);
+	void SelectAnimation(int inIndex);
 
 private:
 	Network&		m_Network;
@@ -36,6 +37,7 @@ private:
 	uint8_t		m_Value = 100;
 	bool		m_LastSwitch = false;
 	uint32_t	m_SwitchTime = 0;
+	int			m_CurrrentAnimation;
 };
 }
 #endif

@@ -25,7 +25,6 @@ CEffect::effect_function CEffect::GetEffect(int inType)
 		case 7: return Effect_Rain; break;
 		case 8: return Effect_Spark2; break;
 		case 9: return Effect_RGB; break;
-
 	}
 }
 
@@ -200,10 +199,10 @@ void CEffect::Effect_PerlinTest(uint32_t inTime, uint8_t* inArgs, CHAL::CStrandV
 
 void CEffect::Effect_RGB(uint32_t inTime, uint8_t* inArgs, CHAL::CStrandView inView)
 {
-	uint8_t theHue = inTime / 100;
-	CHSV theColor(theHue, 255, 255);
+	//uint8_t theHue = inTime / 100;
+//	CHSV theColor(theHue, 0, 255);
 
 
-	inView->fill_solid(theColor);
+	inView->fill_solid(CRGB::White);
 }
 }

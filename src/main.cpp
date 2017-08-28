@@ -16,9 +16,6 @@ using namespace LightSwarm;
 Debug           debug;
 Network         network;
 CVunsq          player;
-CPresentation   backPres;
-CPresentation   frontPres;
-CPresentation   testPres;
 RotaryEncoder   encoder(D1, D2, D3);
 Control         control(network, encoder, player);
 
@@ -32,22 +29,7 @@ void report()
 
 void setup()
 {
-	char* theSequence;
-	uint32_t theByteCount;
-
 	network.Init();
-
-	CPresentation::CreateSequence(4, theSequence, theByteCount);
-	backPres.AddStrand(theSequence, theByteCount);
-	player.AddPresentation(&backPres, network.GetNodeOffset());
-
-	CPresentation::CreateSequence(3, theSequence, theByteCount);
-	frontPres.AddStrand(theSequence, theByteCount);
-	player.AddPresentation(&frontPres, network.GetNodeOffset());
-
-	CPresentation::CreateSequence(8, theSequence, theByteCount);
-	testPres.AddStrand(theSequence, theByteCount);
-	player.AddPresentation(&testPres, network.GetNodeOffset());
 }
 
 void loop()

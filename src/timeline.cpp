@@ -15,8 +15,8 @@ CTimeline::CTimeline(char* inSequence, uint32_t inByteCount)
 
 CTimeline::~CTimeline()
 {
-	if (m_Sequence)
-		delete[] m_Sequence;
+	//if (m_Sequence)
+	//	delete[] m_Sequence;
 }
 
 SEvent* CTimeline::NextEvent(uint32_t inTime)
