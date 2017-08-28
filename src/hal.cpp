@@ -18,7 +18,6 @@ CHAL::CHAL()
 	WiFi.setSleepMode(WIFI_NONE_SLEEP);
 	SPIFFS.begin();
 	InitConfig();
-
 }
 
 CHAL::~CHAL()
@@ -121,8 +120,11 @@ void CHAL::CreateStrandViews()
 	m_LEDBuffer = new CRGB[m_Config.m_PhysicalStrandCount*m_Config.m_PhysicalStrandLEDCount];
 	switch (m_Config.m_PhysicalStrandCount)
 	{
+		// 2 strands is a dong with WS2812 aka 2811 type LEDs
 		case 2: FastLED.addLeds<WS2811_PORTA, 2, GRB>(m_LEDBuffer, m_Config.m_PhysicalStrandLEDCount); break;
-		case 4: FastLED.addLeds<WS2811_PORTA, 4, GRB>(m_LEDBuffer, m_Config.m_PhysicalStrandLEDCount); break;
+
+		// 4 strands is jelly with WS2813 type LEDs
+		case 4: FastLED.addLeds<WS2813_PORTA, 4, GRB>(m_LEDBuffer, m_Config.m_PhysicalStrandLEDCount); break;
 
 		default: ERR("ILLEGAL NUMBER OF PHYSICAL STRANDS"); break;
 	}
