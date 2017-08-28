@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <ArduinoJson.h>
 #include "control.h"
 #include "debug.h"
 #include "network.h"
@@ -71,28 +72,54 @@ void Control::OnClick(uint32_t inMillisDown)
 {
 	INFO(" [CTRL] Click duration=%u long=%s\n", inMillisDown, inMillisDown > 1000 ? "YES" : "no");
 	String message = "My value is " + String(m_Value, DEC);
-	Broadcast(message);
+	m_Network.Broadcast(message);
 }
 
 
 void Control::OnTurn(int inDelta)
 {
-	INFO(" [CTRL] Turn value=%u delta=%d\n", m_Value, inDelta);
+	StaticJsonBuffer<kMaxJson> jsonBuffer;
+	JsonObject& root = jsonBuffer.createObject();
+	root["msg"] = "SetAnim";
+	root["index"] = m_Value;
+
+	char output[kMaxJson];
+	root.prettyPrintTo(output, kMaxJson);
+
+
+	INFO(" [CTRL] Turn value=%u delta=%d json=%s\n", m_Value, inDelta, output);
+
+
 	SelectAnimation(m_Value);
+	m_Network.Broadcast(output);
 }
 
 
 void Control::OnMessage(uint32_t inFromNodeID, const String& inMessage)
 {
 	INFO(" [CTRL] <%x>:  Received msg=%s from=%x\n", m_Network.GetNodeID(), inMessage.c_str(), inFromNodeID);
+
+	StaticJsonBuffer<kMaxJson> jsonBuffer;
+	JsonObject& root = jsonBuffer.parseObject(inMessage.c_str());
+
+	// Test if parsing succeeds.
+	if (!root.success())
+	{
+		WARN("Not JSON");
+		return;
+	}
+
+	if (!root.containsKey("msg"))
+	{
+		WARN("Not a message");
+		return;
+	}
+
+	const char* msg = root["msg"];
+	if (0 == strcmp(msg, "SetAnim"))
+		SelectAnimation(root["index"]);
 }
 
-
-void Control::Broadcast(const String& inMessage)
-{
-	//INFO(" [CTRL] <%x>:  Sending=%s\n", inMessage.c_str());
-	m_Network.Broadcast(inMessage);
-}
 
 void Control::SelectAnimation(int inIndex)
 {
@@ -146,5 +173,7 @@ void Control::SelectAnimation(int inIndex)
 		}
 	}
 }
+
+
 
 } // namespace

@@ -25,7 +25,6 @@ public:
 
 protected:
 	void ReadEncoder();
-	void Broadcast(const String& inMessage);
 	void SelectAnimation(int inIndex);
 
 private:
@@ -33,11 +32,13 @@ private:
 	RotaryEncoder&	m_Encoder;
 	CVunsq&			m_Player;
 
-	uint32_t	m_LastTime = 0;
-	uint8_t		m_Value = 100;
-	bool		m_LastSwitch = false;
-	uint32_t	m_SwitchTime = 0;
-	int			m_CurrrentAnimation;
+	uint32_t		m_LastTime = 0;
+	uint8_t			m_Value = 100;
+	bool			m_LastSwitch = false;
+	uint32_t		m_SwitchTime = 0;
+	int				m_CurrrentAnimation;
+
+	static const size_t	kMaxJson = 100;
 };
 }
 #endif
