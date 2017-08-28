@@ -16,15 +16,15 @@ namespace LightSwarm {
 class Debug final
 {
 public:
-    Debug();
+	Debug();
 
-    void SetLed(bool on = true);
+	void SetLed(bool on = true);
 
-    void Info(const char* format, ...);
-    void Warn(const char* format, ...);
-    void Error(const char* format, ...);
+	void Info(const char* format, ...);
+	void Warn(const char* format, ...);
+	void Error(const char* format, ...);
 
-    static Debug& GetSingleton();
+	static Debug& GetSingleton();
 };
 } // namespace
 

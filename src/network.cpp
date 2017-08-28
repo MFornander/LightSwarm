@@ -12,20 +12,20 @@ namespace LightSwarm {
 
 Network::Network()
 {
-    using namespace std::placeholders;
+	using namespace std::placeholders;
 
-    // CAN THIS BE DONE IN THE CONSTRUCTOR???
-    m_mesh.setDebugMsgTypes(ERROR | MESH_STATUS);// | COMMUNICATION);
-    //m_mesh.setDebugMsgTypes(ERROR | DEBUG | STARTUP | CONNECTION);  // set before init() so that you can see startup messages
-    //m_mesh.setDebugMsgTypes(ERROR | DEBUG | MESH_STATUS | CONNECTION | SYNC | COMMUNICATION | GENERAL | MSG_TYPES | REMOTE );
+	// CAN THIS BE DONE IN THE CONSTRUCTOR???
+	m_mesh.setDebugMsgTypes(ERROR | MESH_STATUS);// | COMMUNICATION);
+	//m_mesh.setDebugMsgTypes(ERROR | DEBUG | STARTUP | CONNECTION);  // set before init() so that you can see startup messages
+	//m_mesh.setDebugMsgTypes(ERROR | DEBUG | MESH_STATUS | CONNECTION | SYNC | COMMUNICATION | GENERAL | MSG_TYPES | REMOTE );
 
-    m_mesh.onReceive(             std::bind(&Network::ReceivedCallback, this, _1, _2));
-    m_mesh.onNewConnection(       std::bind(&Network::NewConnectionCallback, this, _1));
-    m_mesh.onChangedConnections(  std::bind(&Network::ChangedConnectionCallback, this));
-    m_mesh.onNodeTimeAdjusted(    std::bind(&Network::NodeTimeAdjustedCallback, this, _1));
-    m_mesh.onNodeDelayReceived(   std::bind(&Network::DelayReceivedCallback, this, _1, _2));
+	m_mesh.onReceive(             std::bind(&Network::ReceivedCallback, this, _1, _2));
+	m_mesh.onNewConnection(       std::bind(&Network::NewConnectionCallback, this, _1));
+	m_mesh.onChangedConnections(  std::bind(&Network::ChangedConnectionCallback, this));
+	m_mesh.onNodeTimeAdjusted(    std::bind(&Network::NodeTimeAdjustedCallback, this, _1));
+	m_mesh.onNodeDelayReceived(   std::bind(&Network::DelayReceivedCallback, this, _1, _2));
 
-    randomSeed(analogRead(A0));
+	randomSeed(analogRead(A0));
 }
 
 Network::~Network()

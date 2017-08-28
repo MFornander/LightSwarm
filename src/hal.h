@@ -12,58 +12,58 @@
 
 enum ENodeType
 {
-    Type_Controller = 0,
-    Type_Jelly,
-    Type_Dong,
-    Type_Other
+	Type_Controller = 0,
+	Type_Jelly,
+	Type_Dong,
+	Type_Other
 };
 
 struct SStartEnd
 {
-    int     m_Start;
-    int     m_End;
+	int     m_Start;
+	int     m_End;
 };
 
 struct SNodeConfig
 {
-    int                     m_Position = 0;
-    int                     m_Type = Type_Other;
-    String                  m_Name = "None";
-    int                     m_MilliampMax = 4000;
-    int                     m_BackgroundLevel = 100;
-    int                     m_PhysicalStrandCount = 4;
-    int                     m_PhysicalStrandLEDCount = 100;
-    SimpleList<SStartEnd>   m_StrandViewStartEnd;
+	int                     m_Position = 0;
+	int                     m_Type = Type_Other;
+	String                  m_Name = "None";
+	int                     m_MilliampMax = 4000;
+	int                     m_BackgroundLevel = 100;
+	int                     m_PhysicalStrandCount = 4;
+	int                     m_PhysicalStrandLEDCount = 100;
+	SimpleList<SStartEnd>   m_StrandViewStartEnd;
 };
 
 class CHAL
 {
-    public:
-        typedef CPixelView<CRGB>*   CStrandView;
+public:
+	typedef CPixelView<CRGB>*   CStrandView;
 
 	protected:
-        const short     MAX_PHYSICALSTRAND_COUNT = 4;
+	const short     MAX_PHYSICALSTRAND_COUNT = 4;
 
-        SNodeConfig     m_Config;
-		short		    m_StrandViewCount;
-		CStrandView*	m_StrandViews;
-		short           m_PhysicalStrandCount;
+	SNodeConfig     m_Config;
+	short		    m_StrandViewCount;
+	CStrandView*	m_StrandViews;
+	short           m_PhysicalStrandCount;
 
-        CRGB*           m_LEDBuffer;
+	CRGB*           m_LEDBuffer;
 
-	public:
-		CHAL();
-		virtual ~CHAL();
+public:
+	CHAL();
+	virtual ~CHAL();
 
-        //void          LoadConfig();
-        void                InitConfig();
-        const SNodeConfig&  GetConfig();
+	//void          LoadConfig();
+	void                InitConfig();
+	const SNodeConfig&  GetConfig();
 
-		void          CreateStrandViews();
-		uint16_t      GetStrandViewCount();
-    	CStrandView   GetStrandView(uint16_t inIndex);
+	void          CreateStrandViews();
+	uint16_t      GetStrandViewCount();
+	CStrandView   GetStrandView(uint16_t inIndex);
 
-		void	      FlushLEDs();
+	void	      FlushLEDs();
 };
 
 #endif // HAL_H

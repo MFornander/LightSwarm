@@ -24,38 +24,38 @@ Control         control(network, encoder);
 
 void report()
 {
-    debug.SetLed( network.GetNodeCount() == 0 );
-    INFO("%s: id=<%x> fps=%d time=%x nodes=%u stab=%d frame=%u retry=%u\n",
-        Version::BUILD, network.GetNodeID(), LEDS.getFPS(), network.GetTime(), network.GetNodeCount() + 1,
-        network.GetStability(), _frame_cnt, _retry_cnt);
+	debug.SetLed( network.GetNodeCount() == 0 );
+	INFO("%s: id=<%x> fps=%d time=%x nodes=%u stab=%d frame=%u retry=%u\n",
+		Version::BUILD, network.GetNodeID(), LEDS.getFPS(), network.GetTime(), network.GetNodeCount() + 1,
+		network.GetStability(), _frame_cnt, _retry_cnt);
 }
 
 void setup()
 {
-    char* theSequence;
-    uint32_t theByteCount;
+	char* theSequence;
+	uint32_t theByteCount;
 
-    network.Init();
+	network.Init();
 
-    CPresentation::CreateSequence(4, theSequence, theByteCount);
-    backPres.AddStrand(theSequence, theByteCount);
-    player.AddPresentation(&backPres, network.GetNodeOffset());
+	CPresentation::CreateSequence(4, theSequence, theByteCount);
+	backPres.AddStrand(theSequence, theByteCount);
+	player.AddPresentation(&backPres, network.GetNodeOffset());
 
-    CPresentation::CreateSequence(3, theSequence, theByteCount);
-    frontPres.AddStrand(theSequence, theByteCount);
-    player.AddPresentation(&frontPres, network.GetNodeOffset());
+	CPresentation::CreateSequence(3, theSequence, theByteCount);
+	frontPres.AddStrand(theSequence, theByteCount);
+	player.AddPresentation(&frontPres, network.GetNodeOffset());
 
-    CPresentation::CreateSequence(8, theSequence, theByteCount);
-    testPres.AddStrand(theSequence, theByteCount);
-    player.AddPresentation(&testPres, network.GetNodeOffset());
+	CPresentation::CreateSequence(8, theSequence, theByteCount);
+	testPres.AddStrand(theSequence, theByteCount);
+	player.AddPresentation(&testPres, network.GetNodeOffset());
 }
 
 void loop()
 {
-    EVERY_N_SECONDS(2) { report(); }
+	EVERY_N_SECONDS(10) { report(); }
 
-    network.Update();
-    control.Update();
-    
+	network.Update();
+	control.Update();
+
 	player.Step(network.GetTime() / 10000);
 }

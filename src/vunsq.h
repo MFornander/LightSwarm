@@ -7,23 +7,23 @@
 
 struct SBinding
 {
-    CPresentation*	m_Presentation;
-    CStrand*		m_Strands;
-};
+	CPresentation*	m_Presentation;
+	CStrand*		m_Strands;
+	};
 
 class CVunsq
 {
-	protected:
-		CHAL			m_HAL;
-		uint16_t		m_StrandCount;
+protected:
+	CHAL			m_HAL;
+	uint16_t		m_StrandCount;
 
-        SimpleList<SBinding>    m_Bindings;
+	SimpleList<SBinding>    m_Bindings;
 
-    public:
-        CVunsq();
+public:
+	CVunsq();
 
-		void AddPresentation(CPresentation* inPresentation, int32_t inStrandOffset, uint8_t inBrightness = 255);
-		void Step(uint32_t inTime);
+	void AddPresentation(CPresentation* inPresentation, int32_t inStrandOffset, uint8_t inBrightness = 255);
+	void Step(uint32_t inTime);
 };
 
 #endif // VUNSQ_H
