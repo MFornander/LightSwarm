@@ -10,6 +10,8 @@
 #define CONFIG_SIZE 200
 
 namespace LightSwarm {
+
+	
 #define Serial
 
 OTA::OTA()

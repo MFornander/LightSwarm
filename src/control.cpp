@@ -3,13 +3,15 @@
 #include "debug.h"
 #include "network.h"
 #include "rotary.h"
+#include "vunsq.h"
 
 namespace LightSwarm {
 
 
-Control::Control(Network& inNetwork, RotaryEncoder& inEncoder) :
+Control::Control(Network& inNetwork, RotaryEncoder& inEncoder, CVunsq& inPlayer) :
 	m_Network(inNetwork),
-	m_Encoder(inEncoder)
+	m_Encoder(inEncoder),
+	m_Player(inPlayer)
 {
 	using namespace std::placeholders;
 
@@ -19,7 +21,17 @@ Control::Control(Network& inNetwork, RotaryEncoder& inEncoder) :
 	m_SwitchTime = millis();
 }
 
+
 void Control::Update()
+{
+	ReadEncoder();
+
+	m_Network.Update();
+	m_Player.Step(m_Network.GetTime() / 10000);
+}
+
+
+void Control::ReadEncoder()
 {
 	bool theCurrentSwitch = m_Encoder.Switch();
 	uint32_t theCurrentTime = millis();
@@ -50,6 +62,7 @@ void Control::Update()
 	}
 }
 
+
 void Control::OnClick(uint32_t inMillisDown)
 {
 	INFO(" [CTRL] Click duration=%u long=%s\n", inMillisDown, inMillisDown > 1000 ? "YES" : "no");
@@ -57,15 +70,19 @@ void Control::OnClick(uint32_t inMillisDown)
 	Broadcast(message);
 }
 
+
 void Control::OnTurn(int inDelta)
 {
 	INFO(" [CTRL] Turn value=%u delta=%d\n", m_Value, inDelta);
 }
 
+
 void Control::OnMessage(uint32_t inFromNodeID, const String& inMessage)
 {
 	INFO(" [CTRL] <%x>:  Received msg=%s from=%x\n", m_Network.GetNodeID(), inMessage.c_str(), inFromNodeID);
 }
+
+
 void Control::Broadcast(const String& inMessage)
 {
 	//INFO(" [CTRL] <%x>:  Sending=%s\n", inMessage.c_str());

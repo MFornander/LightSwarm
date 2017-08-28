@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+namespace LightSwarm {
+
 //TODO under GCC try struct __attribute__ ((packed))
 #pragma pack(push, 1)
 struct SEvent
@@ -29,5 +31,6 @@ class CTimeline
 
 		SEvent* NextEvent(uint32_t inTime);
 };
+}
 
 #endif // TIMELINE_H

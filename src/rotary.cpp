@@ -53,5 +53,4 @@ void RotaryEncoder::Rebias(int inDelta)
 
 	bias -= bias > inDelta ? inDelta : bias - 1;
 }
-
 }

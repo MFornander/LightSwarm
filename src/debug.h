@@ -4,6 +4,7 @@
 
 namespace LightSwarm {
 
+
 #define INFO(...)  LightSwarm::Debug::GetSingleton().Info(__VA_ARGS__)
 #define WARN(...)  LightSwarm::Debug::GetSingleton().Warn(__VA_ARGS__)
 #define ERR(...)   LightSwarm::Debug::GetSingleton().Error(__VA_ARGS__)

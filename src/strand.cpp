@@ -1,12 +1,15 @@
 #include "strand.h"
 #include "hal.h"
 
+namespace LightSwarm {
+
+
 CStrand::CStrand()
 {
 	m_View = nullptr;
 	m_Timeline = nullptr;
 	m_Event = nullptr;
-	m_Effect = CEffect::Effect_NULLEffect;
+	m_Effect = CEffect::Effect_NULL;
 }
 
 CStrand::~CStrand()
@@ -42,4 +45,5 @@ void CStrand::Step(uint32_t inTime)
 	// Advance the current effect
 	if (m_Event)
 		m_Effect(inTime, m_Event->m_Args, m_View);
+}
 }

@@ -13,6 +13,9 @@ extern "C" {
 
 #include "debug.h"
 
+namespace LightSwarm {
+
+
 CHAL::CHAL()
 {
 	WiFi.setSleepMode(WIFI_NONE_SLEEP);
@@ -155,4 +158,5 @@ void CHAL::FlushLEDs()
 {
 	// Push buffers to HW
 	show_at_max_brightness_for_power();
+}
 }

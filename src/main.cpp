@@ -20,7 +20,7 @@ CPresentation   backPres;
 CPresentation   frontPres;
 CPresentation   testPres;
 RotaryEncoder   encoder(D1, D2, D3);
-Control         control(network, encoder);
+Control         control(network, encoder, player);
 
 void report()
 {
@@ -54,8 +54,5 @@ void loop()
 {
 	EVERY_N_SECONDS(10) { report(); }
 
-	network.Update();
 	control.Update();
-
-	player.Step(network.GetTime() / 10000);
 }

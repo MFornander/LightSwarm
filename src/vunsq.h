@@ -5,11 +5,13 @@
 #include "presentation.h"
 #include "strand.h"
 
+namespace LightSwarm {
+
 struct SBinding
 {
 	CPresentation*	m_Presentation;
 	CStrand*		m_Strands;
-	};
+};
 
 class CVunsq
 {
@@ -25,5 +27,6 @@ public:
 	void AddPresentation(CPresentation* inPresentation, int32_t inStrandOffset, uint8_t inBrightness = 255);
 	void Step(uint32_t inTime);
 };
+}
 
 #endif // VUNSQ_H

@@ -1,5 +1,8 @@
 #include "timeline.h"
 
+namespace LightSwarm {
+
+
 CTimeline::CTimeline(char* inSequence, uint32_t inByteCount)
 {
 	m_Sequence = inSequence;
@@ -32,4 +35,5 @@ SEvent* CTimeline::NextEvent(uint32_t inTime)
 	}
 
 	return theReturnEvent;
+}
 }

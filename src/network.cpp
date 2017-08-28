@@ -10,6 +10,7 @@
 
 namespace LightSwarm {
 
+
 Network::Network()
 {
 	using namespace std::placeholders;

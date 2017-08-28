@@ -2,6 +2,9 @@
 #include "debug.h"
 #include "presentation.h"
 
+namespace LightSwarm {
+
+
 CVunsq::CVunsq()
 {
 	// Set up the strands for this device
@@ -41,4 +44,5 @@ void CVunsq::Step(uint32_t inTime)
 	}
 
 	m_HAL.FlushLEDs();
+}
 }

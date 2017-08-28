@@ -15,5 +15,4 @@ public:
 	static const uint32_t MINOR = VER_MINOR;
 };
 } // namespace
-
 #endif

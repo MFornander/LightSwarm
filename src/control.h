@@ -3,8 +3,10 @@
 
 namespace LightSwarm {
 
+
 class Network;
 class RotaryEncoder;
+class CVunsq;
 
 /**
  * Core class that ties inputs and events to method calls.
@@ -13,7 +15,7 @@ class RotaryEncoder;
 class Control final
 {
 public:
-	Control(Network& inNetwork, RotaryEncoder& encoder);
+	Control(Network& inNetwork, RotaryEncoder& inEncoder, CVunsq& inPlayer);
 
 	void Update();
 
@@ -22,17 +24,18 @@ public:
 	void OnMessage(uint32_t inFromNodeID, const String& inMessage);
 
 protected:
+	void ReadEncoder();
 	void Broadcast(const String& inMessage);
 
-	private:
-	Network& m_Network;
-	RotaryEncoder& m_Encoder;
+private:
+	Network&		m_Network;
+	RotaryEncoder&	m_Encoder;
+	CVunsq&			m_Player;
 
-	uint32_t    m_LastTime = 0;
-	uint8_t     m_Value = 100;
-	bool        m_LastSwitch = false;
-	uint32_t    m_SwitchTime = 0;
+	uint32_t	m_LastTime = 0;
+	uint8_t		m_Value = 100;
+	bool		m_LastSwitch = false;
+	uint32_t	m_SwitchTime = 0;
 };
-} // namespace
-
+}
 #endif

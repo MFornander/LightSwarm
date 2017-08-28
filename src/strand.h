@@ -4,6 +4,8 @@
 #include "timeline.h"
 #include "effect.h"
 
+namespace LightSwarm {
+
 class CStrand final
 {
 	protected:
@@ -21,5 +23,6 @@ public:
 	void SetTimeline(CTimeline* inTimeline);
 	void Step(uint32_t inTime);
 };
+}
 
 #endif // STRAND_H

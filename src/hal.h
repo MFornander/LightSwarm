@@ -10,6 +10,9 @@
 #include <SimpleList.h>
 #include <FastLED.h>
 
+namespace LightSwarm {
+
+
 enum ENodeType
 {
 	Type_Controller = 0,
@@ -65,5 +68,6 @@ public:
 
 	void	      FlushLEDs();
 };
+}
 
 #endif // HAL_H

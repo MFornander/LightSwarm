@@ -3,38 +3,39 @@
 #include "debug.h"
 #include <noise.h>
 
+namespace LightSwarm {
 
 CEffect::CEffect()
 {
 }
 
+
 CEffect::effect_function CEffect::GetEffect(int inType)
 {
 	switch (inType)
 	{
-		case 3:
-			return Effect_Spark;
-			break;
-		case 4:
-			return Effect_Rainbow;
-			break;
-		case 5:
-			return Effect_Gadoosh;
-			break;
-		case 6:
-			return Effect_Pulse;
-			break;
-		case 7:
-			return Effect_Rain;
-			break;
-		case 8:
-			return Effect_Spark2;
-			break;
 		default:
-			return Effect_NULLEffect;
+			return Effect_NULL;
 			break;
+
+		case 3: return Effect_Spark; break;
+		case 4: return Effect_Rainbow; break;
+		case 5: return Effect_Gadoosh; break;
+		case 6: return Effect_Pulse; break;
+		case 7: return Effect_Rain; break;
+		case 8: return Effect_Spark2; break;
+		case 9: return Effect_RGB; break;
+
 	}
 }
+
+
+void CEffect::Effect_NULL(uint32_t inTime, uint8_t* inArgs, CHAL::CStrandView inView)
+{
+	//std::cout << inStrand->m_Index << ": NULL Effect" << std::endl;
+	//INFO("Effect_NULLEffect\n");
+}
+
 
 void CEffect::Effect_Spark(uint32_t inTime, uint8_t* inArgs, CHAL::CStrandView inView)
 {
@@ -60,6 +61,7 @@ void CEffect::Effect_Spark(uint32_t inTime, uint8_t* inArgs, CHAL::CStrandView i
 	}
 }
 
+
 void CEffect::Effect_Spark2(uint32_t inTime, uint8_t* inArgs, CHAL::CStrandView inView)
 {
 	bool  theSparkForward = false;   // Get this later from Args
@@ -84,6 +86,7 @@ void CEffect::Effect_Spark2(uint32_t inTime, uint8_t* inArgs, CHAL::CStrandView 
 	}
 }
 
+
 void CEffect::Effect_Rainbow(uint32_t inTime, uint8_t* inArgs, CHAL::CStrandView inView)
 {
 	int     theRainbowMovementDir = -1;   // Get this later from Args
@@ -94,6 +97,7 @@ void CEffect::Effect_Rainbow(uint32_t inTime, uint8_t* inArgs, CHAL::CStrandView
 	if (thePulseFlag)
 		inView->fadeLightBy( sin8_C(inTime)/2 + 100 );
 }
+
 
 void CEffect::Effect_Gadoosh(uint32_t inTime, uint8_t* inArgs, CHAL::CStrandView inView)
 {
@@ -116,6 +120,7 @@ void CEffect::Effect_Gadoosh(uint32_t inTime, uint8_t* inArgs, CHAL::CStrandView
 	*/
 }
 
+
 void CEffect::Effect_Pulse(uint32_t inTime, uint8_t* inArgs, CHAL::CStrandView inView)
 {
 	CHSV theColor(70, 1, inTime%255);
@@ -124,6 +129,7 @@ void CEffect::Effect_Pulse(uint32_t inTime, uint8_t* inArgs, CHAL::CStrandView i
 	//INFO("Effect_Pulse\n");
 	inView->fill_solid(theColor);
 }
+
 
 void CEffect::Effect_Rain(uint32_t inTime, uint8_t* inArgs, CHAL::CStrandView inView)
 {
@@ -164,6 +170,7 @@ void CEffect::Effect_Rain(uint32_t inTime, uint8_t* inArgs, CHAL::CStrandView in
 */
 }
 
+
 void CEffect::Effect_PerlinTest(uint32_t inTime, uint8_t* inArgs, CHAL::CStrandView inView)
 {
 	const int ledCount = inView->size();
@@ -191,8 +198,12 @@ void CEffect::Effect_PerlinTest(uint32_t inTime, uint8_t* inArgs, CHAL::CStrandV
 }
 
 
-void CEffect::Effect_NULLEffect(uint32_t inTime, uint8_t* inArgs, CHAL::CStrandView inView)
+void CEffect::Effect_RGB(uint32_t inTime, uint8_t* inArgs, CHAL::CStrandView inView)
 {
-	//std::cout << inStrand->m_Index << ": NULL Effect" << std::endl;
-	//INFO("Effect_NULLEffect\n");
+	uint8_t theHue = inTime / 100;
+	CHSV theColor(theHue, 255, 255);
+
+
+	inView->fill_solid(theColor);
+}
 }

@@ -3,6 +3,9 @@
 
 #include <FS.h>
 
+namespace LightSwarm {
+
+
 class CTimeline;
 
 struct SStrandEntry
@@ -45,5 +48,6 @@ private:
 	void		ReadBytes(char* ioBytes, long inLength);
 	void		SkipString();
 };
+}
 
 #endif // PRESENTATION_H

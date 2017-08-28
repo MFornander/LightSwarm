@@ -4,6 +4,9 @@
 #include "debug.h"
 #include <FS.h>
 
+namespace LightSwarm {
+
+
 CPresentation::CPresentation()
 {
 	// Create an empty presentation that we can add strands to in the future
@@ -163,4 +166,5 @@ void CPresentation::SkipString()
 	m_File.read((uint8_t*)theString, theLength);
 	theString[theLength] = '\0';
 	Serial.println(theString);
+}
 }
