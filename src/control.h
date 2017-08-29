@@ -26,6 +26,7 @@ public:
 protected:
 	void ReadEncoder();
 	void SelectAnimation(int inIndex);
+	void SelectSpeed(int inSpeed);
 
 private:
 	Network&		m_Network;
@@ -37,6 +38,7 @@ private:
 	bool			m_LastSwitch = false;
 	uint32_t		m_SwitchTime = 0;
 	int				m_CurrrentAnimation;
+	int				m_Speed = 0;
 
 	static const size_t	kMaxJson = 100;
 };

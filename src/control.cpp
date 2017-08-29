@@ -32,7 +32,18 @@ void Control::Update()
 	ReadEncoder();
 
 	m_Network.Update();
-	m_Player.Step(m_Network.GetTime() / 10000);
+
+
+	uint32_t theTimeDivider;
+	switch (m_Speed)
+	{
+		default:
+		case 0: theTimeDivider = 10000; break;
+		case 1: theTimeDivider = 50000; break;
+		case 2: theTimeDivider = 3000; break;
+	}
+
+	m_Player.Step(m_Network.GetTime() / theTimeDivider);
 }
 
 
@@ -70,28 +81,36 @@ void Control::ReadEncoder()
 
 void Control::OnClick(uint32_t inMillisDown)
 {
-	INFO(" [CTRL] Click duration=%u long=%s\n", inMillisDown, inMillisDown > 1000 ? "YES" : "no");
-	String message = "My value is " + String(m_Value, DEC);
-	m_Network.Broadcast(message);
+	const bool longClick = inMillisDown > 1000;
+
+	INFO(" [CTRL] Click duration=%u long=%s\n", inMillisDown, longClick ? "YES" : "no");
+
+
+	if (longClick)
+	{
+		StaticJsonBuffer<kMaxJson> jsonBuffer;
+		JsonObject& root = jsonBuffer.createObject();
+		root["msg"] = "SetAnim";
+		root["idx"] = m_Value;
+		root["spd"] = m_Speed;
+
+		char output[kMaxJson];
+		root.prettyPrintTo(output, kMaxJson);
+
+		m_Network.Broadcast(output);
+	}
+	else
+	{
+		SelectSpeed(++m_Speed);
+	}
 }
 
 
 void Control::OnTurn(int inDelta)
 {
-	StaticJsonBuffer<kMaxJson> jsonBuffer;
-	JsonObject& root = jsonBuffer.createObject();
-	root["msg"] = "SetAnim";
-	root["index"] = m_Value;
 
-	char output[kMaxJson];
-	root.prettyPrintTo(output, kMaxJson);
-
-
-	INFO(" [CTRL] Turn value=%u delta=%d json=%s\n", m_Value, inDelta, output);
-
-
+	INFO(" [CTRL] Turn value=%u delta=%d\n", m_Value, inDelta);
 	SelectAnimation(m_Value);
-	m_Network.Broadcast(output);
 }
 
 
@@ -105,19 +124,22 @@ void Control::OnMessage(uint32_t inFromNodeID, const String& inMessage)
 	// Test if parsing succeeds.
 	if (!root.success())
 	{
-		WARN("Not JSON");
+		WARN("Not JSON\n");
 		return;
 	}
 
 	if (!root.containsKey("msg"))
 	{
-		WARN("Not a message");
+		WARN("Not a message\n");
 		return;
 	}
 
 	const char* msg = root["msg"];
 	if (0 == strcmp(msg, "SetAnim"))
-		SelectAnimation(root["index"]);
+	{
+		SelectAnimation(root["idx"]);
+		SelectSpeed(root["spd"]);
+	}
 }
 
 
@@ -138,8 +160,8 @@ void Control::SelectAnimation(int inIndex)
 	CPresentation*  thePresentation;
 
 
-	inIndex %= kPresentationCount;
 	INFO(" [CTRL] Switching to pres=%u\n", inIndex);
+
 	switch (inIndex)
 	{
 		case 1:
@@ -172,6 +194,12 @@ void Control::SelectAnimation(int inIndex)
 			break;
 		}
 	}
+}
+
+void Control::SelectSpeed(int inSpeed)
+{
+	m_Speed = inSpeed % 3;
+	INFO(" [CTRL] Switching to speed=%d\n", m_Speed);
 }
 
 
