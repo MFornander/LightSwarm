@@ -30,7 +30,7 @@ public:
   /// @param leds point to the raw led data
   /// @param start the start index of the leds for this array
   /// @param end the end index of the leds for this array
-  inline CPixelView(PIXEL_TYPE *_leds, int _start, int _end) : dir(((_end - _start)<0) ? -1 : 1), len((_end - _start) + dir), leds(_leds + _start), end_pos(_leds + _start + len) {}
+  inline CPixelView(PIXEL_TYPE *_leds, int _start, int _end) : dir(((_end-_start)<0) ? -1 : 1), len((_end - _start) + dir), leds(_leds + _start), end_pos(_leds + _start + len) {}
 
   /// Get the size of this set
   /// @return the size of the set
@@ -163,7 +163,7 @@ public:
     if(dir >= 0) {
       ::fill_rainbow(leds,len,initialhue,deltahue);
     } else {
-      ::fill_rainbow(leds + len + 1, -len, initialhue + (deltahue * -len), -deltahue);
+      ::fill_rainbow(leds+len+1,-len,initialhue,deltahue);
     }
     return *this;
   }
@@ -172,7 +172,7 @@ public:
     if(dir >= 0) {
       ::fill_gradient(leds,len,startcolor, endcolor, directionCode);
     } else {
-      ::fill_gradient(leds + len + 1, -len, endcolor, startcolor, directionCode);
+      ::fill_gradient(leds + len + 1, (-len), endcolor, startcolor, directionCode);
     }
     return *this;
   }
@@ -199,7 +199,7 @@ public:
     if(dir >= 0) {
       ::fill_gradient_RGB(leds,len,startcolor, endcolor);
     } else {
-      ::fill_gradient_RGB(leds + len + 1, -len, endcolor, startcolor);
+      ::fill_gradient_RGB(leds + len + 1, (-len), endcolor, startcolor);
     }
     return *this;
   }
