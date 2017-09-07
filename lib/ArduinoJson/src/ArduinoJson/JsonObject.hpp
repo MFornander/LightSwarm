@@ -38,13 +38,15 @@ class JsonBuffer;
 // It can also be deserialized from a JSON string via JsonBuffer::parseObject().
 class JsonObject : public Internals::JsonPrintable<JsonObject>,
                    public Internals::ReferenceType,
+                   public Internals::NonCopyable,
                    public Internals::List<JsonPair>,
                    public Internals::JsonBufferAllocated {
  public:
   // Create an empty JsonArray attached to the specified JsonBuffer.
   // You should not use this constructor directly.
   // Instead, use JsonBuffer::createObject() or JsonBuffer.parseObject().
-  explicit JsonObject(JsonBuffer* buffer) : Internals::List<JsonPair>(buffer) {}
+  explicit JsonObject(JsonBuffer* buffer) throw() 
+    : Internals::List<JsonPair>(buffer) {}
 
   // Gets or sets the value associated with the specified key.
   //

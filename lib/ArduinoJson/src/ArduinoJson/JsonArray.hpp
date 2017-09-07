@@ -39,13 +39,14 @@ class JsonArraySubscript;
 // It can also be deserialized from a JSON string via JsonBuffer::parseArray().
 class JsonArray : public Internals::JsonPrintable<JsonArray>,
                   public Internals::ReferenceType,
+                  public Internals::NonCopyable,
                   public Internals::List<JsonVariant>,
                   public Internals::JsonBufferAllocated {
  public:
   // Create an empty JsonArray attached to the specified JsonBuffer.
   // You should not call this constructor directly.
   // Instead, use JsonBuffer::createArray() or JsonBuffer::parseArray().
-  explicit JsonArray(JsonBuffer *buffer)
+  explicit JsonArray(JsonBuffer *buffer) throw()
       : Internals::List<JsonVariant>(buffer) {}
 
   // Gets the value at the specified index
