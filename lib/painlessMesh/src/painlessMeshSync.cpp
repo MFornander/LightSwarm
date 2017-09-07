@@ -5,13 +5,22 @@
 #include "painlessMesh.h"
 #include "painlessMeshSync.h"
 
+#include "time.h"
+
 extern painlessMesh* staticThis;
 uint32_t timeAdjuster = 0;
 
 // timeSync Functions
 //***********************************************************************
 uint32_t ICACHE_FLASH_ATTR painlessMesh::getNodeTime(void) {
-    uint32_t ret = system_get_time() + timeAdjuster;
+#ifdef ESP32
+    timeval tv;
+    gettimeofday(&tv, NULL);
+    auto base_time = tv.tv_sec*1000000 + tv.tv_usec;
+#else
+    auto base_time = system_get_time();
+#endif
+    uint32_t ret = base_time + timeAdjuster;
     debugMsg(GENERAL, "getNodeTime(): time=%u\n", ret);
     return ret;
 }
@@ -103,19 +112,32 @@ int32_t ICACHE_FLASH_ATTR timeSync::delayCalc() {
 
 
 //***********************************************************************
-void ICACHE_FLASH_ATTR painlessMesh::handleNodeSync(std::shared_ptr<meshConnectionType> conn, JsonObject& root) {
+void ICACHE_FLASH_ATTR painlessMesh::handleNodeSync(std::shared_ptr<MeshConnection> conn, JsonObject& root) {
     debugMsg(SYNC, "handleNodeSync(): with %u\n", conn->nodeId);
 
     meshPackageType message_type = (meshPackageType)(int)root["type"];
     uint32_t        remoteNodeId = root["from"];
     bool            reSyncAllSubConnections = false;
 
-    for (auto && connection : _connections) {
+    /*for (auto && connection : _connections) {
         debugMsg(SYNC, "handleNodeSync(): Sanity check %d\n", connection->esp_conn);
         debugMsg(SYNC, "handleNodeSync(): Sanity check Id %u\n", connection->nodeId);
-    }
+    }*/
 
     if (conn->nodeId != remoteNodeId) {
+        if (auto oldConnection = findConnection(remoteNodeId)) {
+            if (oldConnection->nodeId == remoteNodeId) {
+                // Direct connection.
+                debugMsg(SYNC, "handleNodeSync(): Already connected, close connection %u.\n",
+                        remoteNodeId);
+                oldConnection->close();
+            } else {
+                debugMsg(SYNC, "handleNodeSync(): Out of date subConnection information %u.\n",
+                        remoteNodeId);
+                oldConnection->subConnections = "[]";
+                oldConnection->nodeSyncTask.delay(100*TASK_MILLISECOND);
+            }
+        }
         debugMsg(SYNC, "handleNodeSync(): conn->nodeId updated from %u to %u\n", conn->nodeId, remoteNodeId);
         conn->nodeId = remoteNodeId;
 
@@ -130,7 +152,7 @@ void ICACHE_FLASH_ATTR painlessMesh::handleNodeSync(std::shared_ptr<meshConnecti
                     staticThis->newConnectionCallback(nodeId); // Connection dropped. Signal user            
                for (auto &&connection : staticThis->_connections) {
                    if (connection->nodeId != nodeId) { // Exclude current
-                       connection->nodeSyncTask.forceNextIteration();
+                       connection->nodeSyncTask.delay(100*TASK_MILLISECOND);
                    }
                }
                staticThis->stability /= 2;
@@ -150,7 +172,7 @@ void ICACHE_FLASH_ATTR painlessMesh::handleNodeSync(std::shared_ptr<meshConnecti
                 staticThis->startTimeSync(conn);
             });
             scheduler.addTask(conn->timeSyncTask);
-            if (conn->esp_conn->proto.tcp->local_port != _meshPort)
+            if (conn->station)
                 // We are STA, request time immediately
                 conn->timeSyncTask.enable();
             else
@@ -192,7 +214,7 @@ void ICACHE_FLASH_ATTR painlessMesh::handleNodeSync(std::shared_ptr<meshConnecti
     if (reSyncAllSubConnections == true) {
         for (auto &&connection : _connections) {
             if (connection->nodeId != conn->nodeId) { // Exclude current
-                connection->nodeSyncTask.forceNextIteration();
+                connection->nodeSyncTask.delay(100*TASK_MILLISECOND);
             }
         }
         stability /= 2;
@@ -203,10 +225,10 @@ void ICACHE_FLASH_ATTR painlessMesh::handleNodeSync(std::shared_ptr<meshConnecti
 }
 
 //***********************************************************************
-void ICACHE_FLASH_ATTR painlessMesh::startTimeSync(std::shared_ptr<meshConnectionType> conn) {
+void ICACHE_FLASH_ATTR painlessMesh::startTimeSync(std::shared_ptr<MeshConnection> conn) {
     String timeStamp;
 
-    debugMsg(S_TIME, "startTimeSync(): with %u, local port: %d\n", conn->nodeId, conn->esp_conn->proto.tcp->local_port);
+    debugMsg(S_TIME, "startTimeSync(): with %u, local port: %d\n", conn->nodeId, conn->pcb->local_port);
     auto adopt = adoptionCalc(conn);
     if (adopt) {
         timeStamp = conn->time.buildTimeStamp(TIME_REQUEST, getNodeTime()); // Ask other party its time
@@ -219,7 +241,7 @@ void ICACHE_FLASH_ATTR painlessMesh::startTimeSync(std::shared_ptr<meshConnectio
 }
 
 //***********************************************************************
-bool ICACHE_FLASH_ATTR painlessMesh::adoptionCalc(std::shared_ptr<meshConnectionType> conn) {
+bool ICACHE_FLASH_ATTR painlessMesh::adoptionCalc(std::shared_ptr<MeshConnection> conn) {
     if (conn == NULL) // Missing connection
         return false;
     // make the adoption calulation. Figure out how many nodes I am connected to exclusive of this connection.
@@ -227,7 +249,7 @@ bool ICACHE_FLASH_ATTR painlessMesh::adoptionCalc(std::shared_ptr<meshConnection
     // We use length as an indicator for how many subconnections both nodes have
     uint16_t mySubCount = subConnectionJson(conn).length();  //exclude this connection.
     uint16_t remoteSubCount = conn->subConnections.length();
-    bool ap = conn->esp_conn->proto.tcp->local_port == _meshPort;
+    bool ap = conn->pcb->local_port == _meshPort;
 
     // ToDo. Simplify this logic
     bool ret = (mySubCount > remoteSubCount) ? false : true;
@@ -241,7 +263,7 @@ bool ICACHE_FLASH_ATTR painlessMesh::adoptionCalc(std::shared_ptr<meshConnection
 }
 
 //***********************************************************************
-void ICACHE_FLASH_ATTR painlessMesh::handleTimeSync(std::shared_ptr<meshConnectionType> conn, JsonObject& root, uint32_t receivedAt) {
+void ICACHE_FLASH_ATTR painlessMesh::handleTimeSync(std::shared_ptr<MeshConnection> conn, JsonObject& root, uint32_t receivedAt) {
     auto timeSyncMessageType = static_cast<timeSyncMessageType_t>(root["msg"]["type"].as<int>());
     String msg;
 
@@ -266,7 +288,7 @@ void ICACHE_FLASH_ATTR painlessMesh::handleTimeSync(std::shared_ptr<meshConnecti
         debugMsg(S_TIME, "handleTimeSync(): timeSyncStatus with %u completed\n", conn->nodeId);
 
         // After response is sent I assume sync is completed
-        conn->timeSyncTask.delay(TIME_SYNC_INTERVAL/1000);
+        conn->timeSyncTask.delay(TIME_SYNC_INTERVAL);
         break;
 
     case (TIME_RESPONSE):
@@ -286,7 +308,7 @@ void ICACHE_FLASH_ATTR painlessMesh::handleTimeSync(std::shared_ptr<meshConnecti
 
         if (offset < MIN_ACCURACY && offset > -MIN_ACCURACY) {
             // mark complete only if offset was less than 10 ms
-            conn->timeSyncTask.delay(TIME_SYNC_INTERVAL/1000);
+            conn->timeSyncTask.delay(TIME_SYNC_INTERVAL);
             debugMsg(S_TIME, "handleTimeSync(): timeSyncStatus with %u completed\n", conn->nodeId);
 
             // Time has changed, update other nodes
@@ -298,7 +320,7 @@ void ICACHE_FLASH_ATTR painlessMesh::handleTimeSync(std::shared_ptr<meshConnecti
             }
         } else {
             // Iterate sync procedure if accuracy was not enough
-            conn->timeSyncTask.delay(200); // Small delay
+            conn->timeSyncTask.delay(200*TASK_MILLISECOND); // Small delay
             debugMsg(S_TIME, "handleTimeSync(): timeSyncStatus with %u needs further tries\n", conn->nodeId);
 
         }
@@ -309,7 +331,7 @@ void ICACHE_FLASH_ATTR painlessMesh::handleTimeSync(std::shared_ptr<meshConnecti
 
 }
 
-void ICACHE_FLASH_ATTR painlessMesh::handleTimeDelay(std::shared_ptr<meshConnectionType> conn, JsonObject& root, uint32_t receivedAt) {
+void ICACHE_FLASH_ATTR painlessMesh::handleTimeDelay(std::shared_ptr<MeshConnection> conn, JsonObject& root, uint32_t receivedAt) {
     String timeStamp = root["msg"];
     uint32_t from = root["from"];
     debugMsg(S_TIME, "handleTimeDelay(): from %u in timestamp = %s\n", from, timeStamp.c_str());

@@ -163,12 +163,14 @@ extern "C" {
 
 #ifndef _TASK_MICRO_RES
 
+#define TASK_MILLISECOND	1UL
 #define TASK_SECOND			1000UL
 #define TASK_MINUTE		   60000UL
 #define TASK_HOUR		 3600000UL
 
 #else
 
+#define TASK_MILLISECOND   1000UL
 #define TASK_SECOND		1000000UL
 #define TASK_MINUTE	   60000000UL
 #define TASK_HOUR	 3600000000UL
@@ -327,6 +329,13 @@ class Scheduler {
 		inline void startNow(bool aRecursive = true); 			// reset ALL active tasks to immediate execution NOW.
 		inline Task& currentTask() {return *iCurrent; }
 		inline long timeUntilNextIteration(Task& aTask); // return number of ms until next iteration of a given Task
+
+        inline bool empty() { return iFirst == NULL; }
+        /**
+         * \brief Return the number of tasks
+         */
+        inline size_t size();
+
 #ifdef _TASK_SLEEP_ON_IDLE_RUN
 		inline void allowSleep(bool aState = true);
 #endif  // _TASK_SLEEP_ON_IDLE_RUN
@@ -560,7 +569,8 @@ void Task::enableDelayed(unsigned long aDelay) {
 void Task::delay(unsigned long aDelay) {
 //	if (!aDelay) aDelay = iInterval;
 	iDelay = aDelay ? aDelay : iInterval;
-	iPreviousMillis = _TASK_TIME_FUNCTION(); // - iInterval + aDelay;
+    // -1 is to make sure it is in the past
+	iPreviousMillis = _TASK_TIME_FUNCTION() - 1; // - iInterval + aDelay;
 }
 
 /** Schedules next iteration of Task for execution immediately (if enabled)
@@ -794,6 +804,19 @@ long Scheduler::timeUntilNextIteration(Task& aTask) {
 	return ( d );
 }
 
+
+/** Returns the size of the task lists (number of tasks)
+ *
+ */
+size_t Scheduler::size() {
+    size_t no = 0;
+    auto iTask = iFirst;
+    while (iTask) {
+        iTask = iTask->iNext;
+        ++no;
+    }
+    return no;
+}
 
 /** Makes one pass through the execution chain.
  * Tasks are executed in the order they were added to the chain
