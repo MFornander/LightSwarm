@@ -22,7 +22,7 @@ protected:
 	CTimeline*					m_Timeline;
 	SEvent*						m_Event;
 	CEffect::effect_function	m_Effect;
-	uint8                       m_Brightness = 0; // until we create content hack this to be an effect offset
+	uint8_t                     m_Brightness = 0; // until we create content hack this to be an effect offset
 };
 }
 
