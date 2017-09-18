@@ -1,5 +1,4 @@
-#ifndef STRAND_H
-#define STRAND_H
+#pragma once
 
 #include "timeline.h"
 #include "effect.h"
@@ -25,5 +24,3 @@ protected:
 	uint8_t                     m_Brightness = 0; // until we create content hack this to be an effect offset
 };
 }
-
-#endif // STRAND_H

@@ -1,10 +1,7 @@
-#ifndef __SWARM_NETWORK_H__
-#define __SWARM_NETWORK_H__
-
+#pragma once
 #include <painlessMesh.h>
 
 namespace LightSwarm {
-
 
 class Network final
 {
@@ -39,5 +36,3 @@ private:
 	uint32_t              m_helloCounter = 0;
 };
 } // namespace
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef VUNSQ_H
-#define VUNSQ_H
+#pragma once
 
 #include "hal.h"
 #include "presentation.h"
@@ -32,5 +31,3 @@ protected:
 
 };
 }
-
-#endif // VUNSQ_H

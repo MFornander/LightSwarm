@@ -34,7 +34,7 @@ void OTA::RebootUpdate(const String& ssid, const String& pass, const String& hos
     File configFile = SPIFFS.open(CONFIG_NAME, "w");
     if (!configFile)
     {
-        ERR("[OTA] Failed to open config file for writing\n");
+        ERROR("[OTA] Failed to open config file for writing\n");
         return;
     }
 
@@ -60,7 +60,7 @@ void OTA::TryUpdate()
     size_t size = configFile.size();
     if (size > CONFIG_SIZE)
     {
-       ERR("[OTA] Config file size (%d) is too large (%d)\n", (int)size, CONFIG_SIZE);
+        ERROR("[OTA] Config file size (%d) is too large (%d)\n", (int)size, CONFIG_SIZE);
        return;
     }
 
@@ -75,7 +75,7 @@ void OTA::TryUpdate()
 
     if (!config.success())
     {
-        ERR("[OTA] Failed to parse config file\n");
+        ERROR("[OTA] Failed to parse config file\n");
         return;
     }
 
@@ -106,11 +106,11 @@ void OTA::TryUpdate()
     switch (reply)
     {
         case HTTP_UPDATE_FAILED:
-            ERR("[OTA] Update failed\n");
+            ERROR("[OTA] Update failed\n");
             break;
 
         case HTTP_UPDATE_NO_UPDATES:
-            ERR("[OTA] Update no updates\n");
+            ERROR("[OTA] Update no updates\n");
             break;
 
         case HTTP_UPDATE_OK:

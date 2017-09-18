@@ -1,5 +1,4 @@
-#ifndef HAL_H
-#define HAL_H
+#pragma once
 
 #define FASTLED_INTERNAL
 #define FASTLED_ESP8266_D1_PIN_ORDER
@@ -70,5 +69,3 @@ public:
 	void	      FlushLEDs();
 };
 }
-
-#endif // HAL_H

@@ -1,11 +1,9 @@
-#ifndef EFFECT_H
-#define EFFECT_H
+#pragma once
 
 #include <stdint.h>
 #include "hal.h"
 
 namespace LightSwarm {
-
 
 class CEffect
 {
@@ -28,5 +26,3 @@ public:
 	static void Effect_RGB(uint32_t inTime, uint8_t* inArgs, CHAL::CStrandView inView);
 };
 }
-
-#endif // EFFECT_H

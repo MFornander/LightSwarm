@@ -1,10 +1,7 @@
-#ifndef __SWARM_OTA_H__
-#define __SWARM_OTA_H__
-
+#pragma once
 #include <Arduino.h>
 
 namespace LightSwarm {
-
 
 class OTA final
 {
@@ -19,5 +16,3 @@ public:
 	void TryUpdate();
 };
 }
-
-#endif

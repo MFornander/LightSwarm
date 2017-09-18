@@ -1,10 +1,8 @@
-#ifndef TIMELINE_H
-#define TIMELINE_H
+#pragma once
 
 #include <stdint.h>
 
 namespace LightSwarm {
-
 
 //TODO under GCC try struct __attribute__ ((packed))
 #pragma pack(push, 1)
@@ -34,5 +32,3 @@ protected:
 	SEvent*		m_NextEvent;
 };
 }
-
-#endif // TIMELINE_H

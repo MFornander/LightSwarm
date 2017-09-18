@@ -1,8 +1,6 @@
-#ifndef __SWARM_CONTROL_H__
-#define __SWARM_CONTROL_H__
+#pragma once
 
 namespace LightSwarm {
-
 
 class Network;
 class RotaryEncoder;
@@ -43,4 +41,3 @@ private:
 	static const size_t	kMaxJson = 100;
 };
 }
-#endif

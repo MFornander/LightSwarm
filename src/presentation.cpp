@@ -38,7 +38,7 @@ CPresentation::CPresentation(const String& inPresentationPath)
 		}
 	}
 	else
-		ERR("Unable to open the file=%s", inPresentationPath.c_str());
+		ERROR("Unable to open the file=%s", inPresentationPath.c_str());
 }
 
 

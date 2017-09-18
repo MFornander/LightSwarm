@@ -1,5 +1,4 @@
-#ifndef __SWARM_ROTARY_H__
-#define __SWARM_ROTARY_H__
+#pragma once
 
 namespace LightSwarm {
 
@@ -29,7 +28,7 @@ public:
 	// Call this periodically to reduce the bias
 	void Rebias(int delta = 1);
 
-	private:
+private:
 	const int	swPin;
 	const int	dtPin;
 	const int	clkPin;
@@ -39,5 +38,3 @@ public:
 	bool		dt;
 };
 }
-
-#endif
