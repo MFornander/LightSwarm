@@ -4,6 +4,7 @@
 #include "hal.h"
 #include "presentation.h"
 #include "strand.h"
+#include <list>
 
 namespace LightSwarm {
 
@@ -14,7 +15,7 @@ struct SBinding
 };
 
 class CVunsq final
-{
+{ 
 
 public:
 	CVunsq();
@@ -25,10 +26,9 @@ public:
 	void Step(uint32_t inTime);
 
 protected:
-	CHAL			m_HAL;
-	uint16_t		m_StrandCount;
-
-	SimpleList<SBinding>    m_Bindings;
+	CHAL				m_HAL;
+	uint16_t			m_StrandCount;
+	std::list<SBinding>	m_Bindings;
 
 };
 }

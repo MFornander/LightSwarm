@@ -1,14 +1,15 @@
 #ifndef HAL_H
 #define HAL_H
 
+#define FASTLED_INTERNAL
 #define FASTLED_ESP8266_D1_PIN_ORDER
 #define FASTLED_DEBUG_COUNT_FRAME_RETRIES
 #define FASTLED_INTERRUPT_RETRY_COUNT 0
 //#define FASTLED_ALLOW_INTERRUPTS 0
 
 #include <stdint.h>
-#include <SimpleList.h>
 #include <FastLED.h>
+#include <list>
 
 namespace LightSwarm {
 
@@ -36,7 +37,7 @@ struct SNodeConfig
 	int                     m_BackgroundLevel = 100;
 	int                     m_PhysicalStrandCount = 4;
 	int                     m_PhysicalStrandLEDCount = 100;
-	SimpleList<SStartEnd>   m_StrandViewStartEnd;
+	std::list<SStartEnd>    m_StrandViewStartEnd;
 };
 
 class CHAL

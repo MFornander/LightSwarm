@@ -34,7 +34,7 @@ private:
 
 	painlessMesh          m_mesh;
 	bool                  m_calcDelay = false;
-	SimpleList<uint32_t>  m_nodes;
+	std::list<uint32_t>	  m_nodes;
 	uint32_t              m_sendMessageTime = 0;
 	uint32_t              m_helloCounter = 0;
 };
