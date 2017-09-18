@@ -1,0 +1,3 @@
+[submodule "lib/painlessMesh"]
+	path = lib/painlessMesh
+	url = git@gitlab.com:BlackEdder/painlessMesh.git
