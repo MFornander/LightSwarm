@@ -21,7 +21,7 @@ Control::Control(Network& inNetwork, RotaryEncoder& inEncoder, CVunsq& inPlayer)
 
 	m_SwitchTime = millis();
 
-	const int kStartAnimation = 1;
+	const int kStartAnimation = 0;
 	m_CurrrentAnimation = kStartAnimation + 1;
 	SelectAnimation(kStartAnimation);
 }

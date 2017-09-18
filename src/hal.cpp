@@ -1,7 +1,6 @@
 #include "hal.h"
 
 #include <Arduino.h>
-#include <Ticker.h>
 #include <ESP8266WiFi.h>
 #include <FS.h>
 #include <ArduinoJson.h>
@@ -129,7 +128,7 @@ void CHAL::CreateStrandViews()
 		// 4 strands is jelly with WS2813 type LEDs
 		case 4: FastLED.addLeds<WS2813_PORTA, 4, GRB>(m_LEDBuffer, m_Config.m_PhysicalStrandLEDCount); break;
 
-		default: ERROR("ILLEGAL NUMBER OF PHYSICAL STRANDS"); break;
+		default: ERRX("ILLEGAL NUMBER OF PHYSICAL STRANDS"); break;
 	}
 
 	m_StrandViews = new CStrandView[m_StrandViewCount];
