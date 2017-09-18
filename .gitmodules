@@ -1,3 +1,6 @@
 [submodule "lib/painlessMesh"]
 	path = lib/painlessMesh
 	url = git@gitlab.com:BlackEdder/painlessMesh.git
+[submodule "lib/FastLED"]
+	path = lib/FastLED
+	url = https://github.com/FastLED/FastLED.git
