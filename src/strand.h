@@ -1,5 +1,4 @@
 #pragma once
-
 #include "timeline.h"
 #include "effect.h"
 

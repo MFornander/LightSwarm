@@ -1,6 +1,4 @@
-#ifndef PRESENTATION_H
-#define PRESENTATION_H
-
+#pragma once
 #include <FS.h>
 
 namespace LightSwarm {
@@ -49,5 +47,3 @@ private:
 	void		SkipString();
 };
 }
-
-#endif // PRESENTATION_H

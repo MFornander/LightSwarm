@@ -1,7 +1,7 @@
 #include "hal.h"
 
 #include <Arduino.h>
-#include <ESP8266WiFi.h>
+//#include <ESP8266WiFi.h>
 #include <FS.h>
 #include <ArduinoJson.h>
 
@@ -17,7 +17,8 @@ namespace LightSwarm {
 
 CHAL::CHAL()
 {
-	WiFi.setSleepMode(WIFI_NONE_SLEEP);
+	// Disable sleep to minimize interrupts
+	wifi_set_sleep_type(NONE_SLEEP_T);
 	SPIFFS.begin();
 	InitConfig();
 }
