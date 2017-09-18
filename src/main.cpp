@@ -11,11 +11,11 @@
 
 using namespace LightSwarm;
 
-
 Debug           debug;
 Network         network;
-CVunsq          player;
-RotaryEncoder   encoder(D1, D2, D3);
+CHAL			hal(network.GetNodeID());
+CVunsq          player(hal);
+RotaryEncoder   encoder(1, 2, 3);
 Control         control(network, encoder, player);
 
 void report()

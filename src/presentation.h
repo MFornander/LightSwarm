@@ -1,5 +1,6 @@
 #pragma once
-#include <FS.h>
+#include <Arduino.h>
+//#include <SPIFFS.h>
 
 namespace LightSwarm {
 
@@ -21,14 +22,14 @@ typedef SStrandEntry* SIndex;
 class CPresentation final
 {
 protected:
-	File		m_File;
+	//File		m_File;
 	float		m_BPM = 0;
 	short		m_PresentationStrandCount = 0;
 	SIndex		m_Index = nullptr;
 
 public:
 	CPresentation();
-	CPresentation(const String& inPresentationPath);
+	//CPresentation(const String& inPresentationPath);
 	~CPresentation();
 
 	static void	CreateSequence(uint8_t inEffect, char*& outSequence, uint32_t& outByteCount);

@@ -9,7 +9,7 @@ public:
 	Network();
 	~Network();
 
-	void Init(uint8_t channel = 0);
+	void Init();
 	void Update();
 	uint32_t GetTime();
 	uint32_t GetNodeID();

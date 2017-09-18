@@ -33,9 +33,9 @@ Network::~Network()
 {
 }
 
-void Network::Init(uint8_t channel)
+void Network::Init()
 {
-    m_mesh.init(MESH_SSID, MESH_PASSWORD, MESH_PORT, STA_AP, AUTH_WPA2_PSK, channel);
+    m_mesh.init(MESH_SSID, MESH_PASSWORD, MESH_PORT);
 }
 
 void Network::Update()

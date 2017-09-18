@@ -17,7 +17,7 @@ class CVunsq final
 { 
 
 public:
-	CVunsq();
+	CVunsq(CHAL& inHAL);
 
 	void AddPresentation(CPresentation* inPresentation, int32_t inStrandOffset, uint8_t inBrightness = 255);
 	void FreePresentations();
@@ -25,7 +25,7 @@ public:
 	void Step(uint32_t inTime);
 
 protected:
-	CHAL				m_HAL;
+	CHAL&				m_HAL;
 	uint16_t			m_StrandCount;
 	std::list<SBinding>	m_Bindings;
 

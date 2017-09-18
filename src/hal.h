@@ -5,9 +5,9 @@
 #define FASTLED_DEBUG_COUNT_FRAME_RETRIES
 #define FASTLED_INTERRUPT_RETRY_COUNT 0
 //#define FASTLED_ALLOW_INTERRUPTS 0
-
-#include <stdint.h>
+#include <Arduino.h>
 #include <FastLED.h>
+#include <stdint.h>
 #include <list>
 
 namespace LightSwarm {
@@ -44,9 +44,10 @@ class CHAL
 public:
 	typedef CPixelView<CRGB>*   CStrandView;
 
-	protected:
+protected:
 	const short     MAX_PHYSICALSTRAND_COUNT = 4;
 
+	uint32_t 		m_UUID = 0;
 	SNodeConfig     m_Config;
 	short		    m_StrandViewCount;
 	CStrandView*	m_StrandViews;
@@ -55,10 +56,9 @@ public:
 	CRGB*           m_LEDBuffer;
 
 public:
-	CHAL();
+	CHAL(uint32_t inUUID);
 	virtual ~CHAL();
 
-	//void          LoadConfig();
 	void                InitConfig();
 	const SNodeConfig&  GetConfig();
 

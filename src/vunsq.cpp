@@ -5,7 +5,8 @@
 namespace LightSwarm {
 
 
-CVunsq::CVunsq()
+CVunsq::CVunsq(CHAL& inHAL) :
+	m_HAL(inHAL)
 {
 	// Set up the strands for this device
 	m_HAL.CreateStrandViews();

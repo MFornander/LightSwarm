@@ -2,7 +2,6 @@
 #include "timeline.h"
 #include "strand.h"
 #include "debug.h"
-#include <FS.h>
 
 namespace LightSwarm {
 
@@ -19,7 +18,8 @@ CPresentation::CPresentation()
 	}
 }
 
-
+// TODO(mf): Enable SPIFFS
+/*
 CPresentation::CPresentation(const String& inPresentationPath)
 {
 	m_File = SPIFFS.open(inPresentationPath, "r");
@@ -40,7 +40,7 @@ CPresentation::CPresentation(const String& inPresentationPath)
 	else
 		ERRX("Unable to open the file=%s", inPresentationPath.c_str());
 }
-
+*/
 
 CPresentation::~CPresentation()
 {
@@ -86,12 +86,12 @@ CTimeline* CPresentation::CreateTimeline(short inStrandIndex)
 	// If this is from a file and we don't have the data yet then jump to the
 	// location of this strand's timeline and read in the events as a single
 	// buffer.  Cache for later
-	if (m_Index[theWrappedIndex].m_Sequence == nullptr && m_File)
+	/*if (m_Index[theWrappedIndex].m_Sequence == nullptr && m_File)
 	{
 		m_File.seek(m_Index[theWrappedIndex].m_Offset, SeekSet);
 		m_Index[theWrappedIndex].m_Sequence = new char[m_Index[theWrappedIndex].m_ByteCount];
 		ReadBytes(m_Index[theWrappedIndex].m_Sequence, m_Index[theWrappedIndex].m_ByteCount);
-	}
+	}*/
 
 	return new CTimeline(m_Index[theWrappedIndex].m_Sequence, m_Index[theWrappedIndex].m_ByteCount);
 }
@@ -100,7 +100,7 @@ CTimeline* CPresentation::CreateTimeline(short inStrandIndex)
 // =============================================================================
 // Private stream reading functions
 // =============================================================================
-
+/*
 uint8_t CPresentation::ReadByte()
 {
 	uint8_t   theByte;
@@ -176,4 +176,5 @@ void CPresentation::SkipString()
 	theString[theLength] = '\0';
 	Serial.println(theString);
 }
+*/
 }

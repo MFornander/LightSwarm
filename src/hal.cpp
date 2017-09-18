@@ -1,25 +1,18 @@
 #include "hal.h"
 
 #include <Arduino.h>
-//#include <ESP8266WiFi.h>
-#include <FS.h>
 #include <ArduinoJson.h>
-
-extern "C" {
-#include "user_interface.h"
-#include "espconn.h"
-}
-
+#include <painlessMesh.h>
 #include "debug.h"
 
 namespace LightSwarm {
 
 
-CHAL::CHAL()
+CHAL::CHAL(uint32_t inUUID) :
+	m_UUID(inUUID)
 {
-	// Disable sleep to minimize interrupts
-	wifi_set_sleep_type(NONE_SLEEP_T);
-	SPIFFS.begin();
+	// TODO(mf): Disable sleep to minimize interrupts
+	//esp_wifi_set_sleep_type(NONE_SLEEP_T);
 	InitConfig();
 }
 
@@ -29,16 +22,7 @@ CHAL::~CHAL()
 
 void CHAL::InitConfig()
 {
-	uint8_t theMAC[] = { 0,0,0,0,0,0 };
-	wifi_get_macaddr(SOFTAP_IF, theMAC);
-	uint32 theUUID = 0;
-
-	theUUID |= theMAC[2] << 24; //Big endian (aka "network order"):
-	theUUID |= theMAC[3] << 16;
-	theUUID |= theMAC[4] << 8;
-	theUUID |= theMAC[5];
-
-	INFO("UUID %x\n",theUUID);
+	INFO("UUID %x\n", m_UUID);
 
 	const uint32_t  NODE_J0 = 0x7f3a2623; // J0
 	const uint32_t  NODE_J1 = 0x34cf4164; // J1
@@ -56,7 +40,7 @@ void CHAL::InitConfig()
 
 	const uint32_t  NODE_D6 = 0x7f3a9bb1; // D6
 
-	switch (theUUID)
+	switch (m_UUID)
 	{
 		case NODE_J0: m_Config.m_Position =  0; m_Config.m_Type = ENodeType::Type_Jelly; m_Config.m_Name = "J0"; break;
 		case NODE_J1: m_Config.m_Position =  4; m_Config.m_Type = ENodeType::Type_Jelly; m_Config.m_Name = "J1"; break;
@@ -76,7 +60,7 @@ void CHAL::InitConfig()
 
 		default:
 			m_Config.m_Position =  0; m_Config.m_Type = ENodeType::Type_Dong; m_Config.m_Name = "Dong?";
-			WARN("Unknown id= <%x> assuming Dong\n", theUUID);
+			WARN("Unknown id= <%x> assuming Dong\n", m_UUID);
 		break;
 	}
 
