@@ -11,7 +11,6 @@
 
 using namespace LightSwarm;
 
-Debug           debug;
 Network         network;
 CHAL			hal(network.GetNodeID());
 CVunsq          player(hal);
@@ -20,7 +19,7 @@ Control         control(network, encoder, player);
 
 void report()
 {
-	debug.SetLed( network.GetNodeCount() == 0 );
+	Debug::GetSingleton().SetLed( network.GetNodeCount() == 0 );
 	INFO("%s: id=<%x> fps=%d time=%x nodes=%u stab=%d frame=%u retry=%u\n",
 		Version::BUILD, network.GetNodeID(), LEDS.getFPS(), network.GetTime(), network.GetNodeCount() + 1,
 		network.GetStability(), _frame_cnt, _retry_cnt);
