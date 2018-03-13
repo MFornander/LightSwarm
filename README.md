@@ -3,7 +3,11 @@ Wireless awesome light project for BurningMan.
 
 A platform for art cars, art bikes, wearable art, and stationary art to synchronize their LED animations.  Various art pieces can "talk" with each other to simulate dancing, flirting, or other emotions and expressions.
 
-
+## Videos of LightSwarm in Action
+https://www.facebook.com/groups/717748685076630/permalink/724183724433126/
+https://www.facebook.com/jc.ebert/videos/10211179810025091/
+https://www.facebook.com/rolf.kirby/videos/10154702708152507/
+https://www.facebook.com/jc.ebert/videos/10211283437215706/
 
 ## Definitions
 Below is an unsorted list of capabilities, libraries, and modules that we are working towards.
@@ -17,7 +21,6 @@ Below is an unsorted list of capabilities, libraries, and modules that we are wo
 * "Hijacked" by the open source community as cheap arduino killer with radio
 * We have selected ESP8266 as the initial MCU+Radio because of cost and community and support.
 * The main module is the "Wemos D1 mini" for now
-
 
 ## Libraries and Tools
 Quick list of software components we use.
