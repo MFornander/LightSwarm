@@ -29,9 +29,9 @@ public:
 	void Rebias(int delta = 1);
 
 private:
-	const int	swPin;
 	const int	dtPin;
 	const int	clkPin;
+	const int	swPin;
 	byte		maxBias;
 	byte		bias;
 	bool		clk;

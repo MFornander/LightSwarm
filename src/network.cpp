@@ -27,15 +27,11 @@ Network::Network()
 	m_mesh.onNodeDelayReceived(   std::bind(&Network::DelayReceivedCallback, this, _1, _2));
 
 	randomSeed(analogRead(A0));
+	m_mesh.init(MESH_SSID, MESH_PASSWORD, MESH_PORT);
 }
 
 Network::~Network()
 {
-}
-
-void Network::Init()
-{
-    m_mesh.init(MESH_SSID, MESH_PASSWORD, MESH_PORT);
 }
 
 void Network::Update()

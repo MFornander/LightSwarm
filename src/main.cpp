@@ -14,7 +14,7 @@ using namespace LightSwarm;
 Network         network;
 CHAL			hal(network.GetNodeID());
 CVunsq          player(hal);
-RotaryEncoder   encoder(1, 2, 3);
+RotaryEncoder   encoder(D1, D2, D3);
 Control         control(network, encoder, player);
 
 void report()
@@ -27,7 +27,6 @@ void report()
 
 void setup()
 {
-	network.Init();
 }
 
 void loop()

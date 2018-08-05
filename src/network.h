@@ -9,7 +9,6 @@ public:
 	Network();
 	~Network();
 
-	void Init();
 	void Update();
 	uint32_t GetTime();
 	uint32_t GetNodeID();
