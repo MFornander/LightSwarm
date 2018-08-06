@@ -4,6 +4,7 @@
 [submodule "FastLED"]
 	path = lib/FastLED
 	url = https://github.com/MFornander/FastLED.git
+	branch = rainboxfix
 [submodule "ArduinoJson"]
 	path = lib/ArduinoJson
 	url = https://github.com/bblanchon/ArduinoJson.git
