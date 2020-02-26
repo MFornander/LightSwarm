@@ -1,5 +1,6 @@
 #include "hal.h"
 
+#define ARDUINOJSON_USE_LONG_LONG 1
 #include <Arduino.h>
 #include <ArduinoJson.h>
 #include <painlessMesh.h>
@@ -108,10 +109,10 @@ void CHAL::CreateStrandViews()
 	switch (m_Config.m_PhysicalStrandCount)
 	{
 		// 2 strands is a dong with WS2812 aka 2811 type LEDs
-		case 2: FastLED.addLeds<WS2811_PORTA, 2, GRB>(m_LEDBuffer, m_Config.m_PhysicalStrandLEDCount); break;
+		case 2: FastLED.addLeds<WS2811, 2, GRB>(m_LEDBuffer, m_Config.m_PhysicalStrandLEDCount); break;
 
 		// 4 strands is jelly with WS2813 type LEDs
-		case 4: FastLED.addLeds<WS2813_PORTA, 4, GRB>(m_LEDBuffer, m_Config.m_PhysicalStrandLEDCount); break;
+		case 4: FastLED.addLeds<WS2813, 4, GRB>(m_LEDBuffer, m_Config.m_PhysicalStrandLEDCount); break;
 
 		default: ERRX("ILLEGAL NUMBER OF PHYSICAL STRANDS"); break;
 	}

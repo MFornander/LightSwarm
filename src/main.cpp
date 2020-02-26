@@ -11,6 +11,10 @@
 
 using namespace LightSwarm;
 
+// TODO: required for esp32 compile. Not sure how this compiles for esp8266 without
+extern uint32_t _frame_cnt;
+extern uint32_t _retry_cnt;
+
 Network         network;
 CHAL			hal(network.GetNodeID());
 CVunsq          player(hal);

@@ -1,3 +1,4 @@
+#define ARDUINOJSON_USE_LONG_LONG 1
 #include <ArduinoJson.h>
 #include "control.h"
 #include "debug.h"
@@ -87,14 +88,14 @@ void Control::OnClick(uint32_t inMillisDown)
 
 	if (longClick)
 	{
-		StaticJsonBuffer<kMaxJson> jsonBuffer;
-		JsonObject& root = jsonBuffer.createObject();
+		StaticJsonDocument<kMaxJson> jsonBuffer;
+		JsonObject root = jsonBuffer.to<JsonObject>();
 		root["msg"] = "SetAnim";
 		root["idx"] = m_Value;
 		root["spd"] = m_Speed;
 
 		char output[kMaxJson];
-		root.prettyPrintTo(output, kMaxJson);
+		serializeJsonPretty(jsonBuffer, output );
 
 		m_Network.Broadcast(output);
 	}
@@ -117,15 +118,13 @@ void Control::OnMessage(uint32_t inFromNodeID, const String& inMessage)
 {
 	INFO(" [CTRL] <%x>:  Received msg=%s from=%x\n", m_Network.GetNodeID(), inMessage.c_str(), inFromNodeID);
 
-	StaticJsonBuffer<kMaxJson> jsonBuffer;
-	JsonObject& root = jsonBuffer.parseObject(inMessage.c_str());
-
-	// Test if parsing succeeds.
-	if (!root.success())
+	StaticJsonDocument<kMaxJson> jsonBuffer;
+	if(deserializeJson(jsonBuffer, inMessage.c_str()))
 	{
 		WARN("Not JSON\n");
 		return;
 	}
+	JsonObject root = jsonBuffer.as<JsonObject>();
 
 	if (!root.containsKey("msg"))
 	{
