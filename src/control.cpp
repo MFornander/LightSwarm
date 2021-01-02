@@ -143,8 +143,8 @@ void Control::SelectAnimation(int inIndex)
 
     m_Player.FreePresentations();
 
-    char*			theSequence;
-    uint32_t		theByteCount;
+    char*           theSequence;
+    uint32_t        theByteCount;
     CPresentation*  thePresentation;
 
     INFO(" [CTRL] Switching to pres=%u\n", inIndex);

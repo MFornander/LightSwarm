@@ -164,8 +164,8 @@ void CPresentation::ReadBytes(char* ioBytes, long inLength)
 
 void CPresentation::SkipString()
 {
-    char	theLength;
-    char	theString[255];
+    char    theLength;
+    char    theString[255];
 
     m_File.read((uint8_t*)&theLength, 1);
     m_File.read((uint8_t*)theString, theLength);

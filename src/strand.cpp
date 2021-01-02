@@ -35,7 +35,7 @@ void CStrand::Step(uint32_t inTime)
         return;
 
     // Establish the next effect if the event has been triggered
-    SEvent*	theNextEvent = m_Timeline->NextEvent(inTime);
+    SEvent* theNextEvent = m_Timeline->NextEvent(inTime);
     if (theNextEvent != nullptr)
     {
         m_Event = theNextEvent;

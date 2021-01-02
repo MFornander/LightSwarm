@@ -32,10 +32,10 @@ public:
     //CPresentation(const String& inPresentationPath);
     ~CPresentation();
 
-    static void	CreateSequence(uint8_t inEffect, char*& outSequence, uint32_t& outByteCount);
-    void 		AddStrand(char* inSequence, uint32_t inByteCount);
+    static void CreateSequence(uint8_t inEffect, char*& outSequence, uint32_t& outByteCount);
+    void        AddStrand(char* inSequence, uint32_t inByteCount);
 
-    CTimeline*	CreateTimeline(short inStrandIndex);
+    CTimeline*  CreateTimeline(short inStrandIndex);
 
 private:
     uint8_t     ReadByte();

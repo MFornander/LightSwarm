@@ -189,8 +189,8 @@ void CEffect::Effect_PerlinTest(uint32_t inTime, uint8_t* inArgs, CHAL::CStrandV
 
 void CEffect::Effect_RGB(uint32_t inTime, uint8_t* inArgs, CHAL::CStrandView inView)
 {
-    //uint8_t theHue = inTime / 100;
-//	CHSV theColor(theHue, 0, 255);
+//  uint8_t theHue = inTime / 100;
+//  CHSV theColor(theHue, 0, 255);
 
     inView->fill_solid(CRGB::White);
 }

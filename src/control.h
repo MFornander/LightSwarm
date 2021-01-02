@@ -38,6 +38,6 @@ private:
     int             m_CurrrentAnimation;
     int             m_Speed = 0;
 
-    static const size_t	kMaxJson = 100;
+    static const size_t kMaxJson = 100;
 };
 }
