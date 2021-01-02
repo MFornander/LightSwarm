@@ -13,28 +13,28 @@ namespace LightSwarm {
 class RotaryEncoder
 {
 public:
-	// Define which pins to use for the various functions.
-	RotaryEncoder(int dt, int clk, int sw = -1);
+    // Define which pins to use for the various functions.
+    RotaryEncoder(int dt, int clk, int sw = -1);
 
-	// Start RotaryEncoder with optional maxBias (call Rebias() periodically)
-	void Begin(byte maxBias = 1);
+    // Start RotaryEncoder with optional maxBias (call Rebias() periodically)
+    void Begin(byte maxBias = 1);
 
-	// Returns true if switch is currently pressed
-	bool Switch() const;
+    // Returns true if switch is currently pressed
+    bool Switch() const;
 
-	// Returns 0 for no change, +ve for clockwise, -ve for counter-clockwise
-	int Get();
+    // Returns 0 for no change, +ve for clockwise, -ve for counter-clockwise
+    int Get();
 
-	// Call this periodically to reduce the bias
-	void Rebias(int delta = 1);
+    // Call this periodically to reduce the bias
+    void Rebias(int delta = 1);
 
 private:
-	const int	dtPin;
-	const int	clkPin;
-	const int	swPin;
-	byte		maxBias;
-	byte		bias;
-	bool		clk;
-	bool		dt;
+    const int   dtPin;
+    const int   clkPin;
+    const int   swPin;
+    byte        maxBias;
+    byte        bias;
+    bool        clk;
+    bool        dt;
 };
 }

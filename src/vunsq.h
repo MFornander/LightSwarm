@@ -9,25 +9,22 @@ namespace LightSwarm {
 
 struct SBinding
 {
-	CPresentation*	m_Presentation;
-	CStrand*		m_Strands;
+    CPresentation*  m_Presentation;
+    CStrand*        m_Strands;
 };
 
 class CVunsq final
-{ 
-
+{
 public:
-	CVunsq(CHAL& inHAL);
+    CVunsq(CHAL& inHAL);
 
-	void AddPresentation(CPresentation* inPresentation, int32_t inStrandOffset, uint8_t inBrightness = 255);
-	void FreePresentations();
-
-	void Step(uint32_t inTime);
+    void AddPresentation(CPresentation* inPresentation, int32_t inStrandOffset, uint8_t inBrightness = 255);
+    void FreePresentations();
+    void Step(uint32_t inTime);
 
 protected:
-	CHAL&				m_HAL;
-	uint16_t			m_StrandCount;
-	std::list<SBinding>	m_Bindings;
-
+    CHAL&               m_HAL;
+    uint16_t            m_StrandCount;
+    std::list<SBinding> m_Bindings;
 };
 }

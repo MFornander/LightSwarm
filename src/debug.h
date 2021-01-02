@@ -10,18 +10,17 @@ namespace LightSwarm {
 #define WARN_IF(cond, ...)  (!cond) ? (void)0 : WARN(__VA_ARGS__)
 #define ERRX_IF(cond, ...) (!cond) ? (void)0 : ERRX(__VA_ARGS__)
 
-
 class Debug final
 {
 public:
-	Debug();
+    Debug();
 
-	void SetLed(bool on = true);
+    void SetLed(bool on = true);
 
-	void Info(const char* format, ...);
-	void Warn(const char* format, ...);
-	void Error(const char* format, ...);
+    void Info(const char* format, ...);
+    void Warn(const char* format, ...);
+    void Error(const char* format, ...);
 
-	static Debug& GetSingleton();
+    static Debug& GetSingleton();
 };
 } // namespace
