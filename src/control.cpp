@@ -87,14 +87,13 @@ void Control::OnClick(uint32_t inMillisDown)
 
 	if (longClick)
 	{
-		StaticJsonBuffer<kMaxJson> jsonBuffer;
-		JsonObject& root = jsonBuffer.createObject();
+		StaticJsonDocument<kMaxJson> root;
 		root["msg"] = "SetAnim";
 		root["idx"] = m_Value;
 		root["spd"] = m_Speed;
 
 		char output[kMaxJson];
-		root.prettyPrintTo(output, kMaxJson);
+		serializeJsonPretty(root, output, kMaxJson);
 
 		m_Network.Broadcast(output);
 	}
@@ -117,27 +116,25 @@ void Control::OnMessage(uint32_t inFromNodeID, const String& inMessage)
 {
 	INFO(" [CTRL] <%x>:  Received msg=%s from=%x\n", m_Network.GetNodeID(), inMessage.c_str(), inFromNodeID);
 
-	StaticJsonBuffer<kMaxJson> jsonBuffer;
-	JsonObject& root = jsonBuffer.parseObject(inMessage.c_str());
-
-	// Test if parsing succeeds.
-	if (!root.success())
+	StaticJsonDocument<kMaxJson> jsonDoc;
+	auto error = deserializeJson(jsonDoc, inMessage.c_str());
+	if (error)
 	{
-		WARN("Not JSON\n");
+		WARN("deserializeJson() failed with code: %s", error.c_str());
 		return;
 	}
 
-	if (!root.containsKey("msg"))
+	if (!jsonDoc.containsKey("msg"))
 	{
 		WARN("Not a message\n");
 		return;
 	}
 
-	const char* msg = root["msg"];
+	const char* msg = jsonDoc["msg"];
 	if (0 == strcmp(msg, "SetAnim"))
 	{
-		SelectAnimation(root["idx"]);
-		SelectSpeed(root["spd"]);
+		SelectAnimation(jsonDoc["idx"]);
+		SelectSpeed(jsonDoc["spd"]);
 	}
 }
 
