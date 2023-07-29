@@ -17,6 +17,7 @@ enum ENodeType
     Type_Controller = 0,
     Type_Jelly,
     Type_Dong,
+    Type_Testies,
     Type_Other
 };
 
@@ -33,7 +34,7 @@ struct SNodeConfig
     String                  m_Name = "None";
     int                     m_MilliampMax = 4000;
     int                     m_BackgroundLevel = 100;
-    int                     m_PhysicalStrandCount = 4;
+    int                     m_PhysicalStrandCount = 0;
     int                     m_PhysicalStrandLEDCount = 100;
     std::list<SStartEnd>    m_StrandViewStartEnd;
 };
@@ -53,6 +54,7 @@ protected:
     short           m_PhysicalStrandCount;
 
     CRGB*           m_LEDBuffer;
+    CRGB            m_LEDButton{255,0,0};
 
 public:
     CHAL(uint32_t inUUID);
@@ -66,5 +68,6 @@ public:
     CStrandView   GetStrandView(uint16_t inIndex);
 
     void          FlushLEDs();
+    void          SetLEDButton(CRGB const& color); 
 };
 }

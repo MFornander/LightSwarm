@@ -13,8 +13,9 @@ namespace LightSwarm {
 class RotaryEncoder
 {
 public:
-    // Define which pins to use for the various functions.
-    RotaryEncoder(int dt, int clk, int sw = -1);
+    // Define which pins to use for the various functions
+    RotaryEncoder();
+    RotaryEncoder(int sw, int dt = -1, int clk = -1);
 
     // Start RotaryEncoder with optional maxBias (call Rebias() periodically)
     void Begin(byte maxBias = 1);
@@ -29,9 +30,9 @@ public:
     void Rebias(int delta = 1);
 
 private:
-    const int   dtPin;
-    const int   clkPin;
-    const int   swPin;
+    const int   dtPin{-1};
+    const int   clkPin{-1};
+    const int   swPin{-1};
     byte        maxBias;
     byte        bias;
     bool        clk;

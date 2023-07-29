@@ -58,8 +58,8 @@ void CHAL::InitConfig()
         case NODE_D6: m_Config.m_Position = 20; m_Config.m_Type = ENodeType::Type_Dong; m_Config.m_Name = "D6"; break;
 
         default:
-            m_Config.m_Position =  0; m_Config.m_Type = ENodeType::Type_Dong; m_Config.m_Name = "Dong?";
-            WARN("Unknown id= <%x> assuming Dong\n", m_UUID);
+            m_Config.m_Position =  0; m_Config.m_Type = ENodeType::Type_Testies; m_Config.m_Name = "Testies!";
+            WARN("Unknown id= <%x> assuming Testies\n", m_UUID);
         break;
     }
 
@@ -89,6 +89,17 @@ void CHAL::InitConfig()
             m_Config.m_StrandViewStartEnd.push_back({225, 299});
         break;
 
+        case Type_Testies:
+            m_Config.m_MilliampMax = 4000;
+            m_Config.m_BackgroundLevel = 70;
+            m_Config.m_PhysicalStrandCount = 1;
+            m_Config.m_PhysicalStrandLEDCount = 300;
+            m_StrandViewCount = 2;
+            m_Config.m_StrandViewStartEnd.push_back({149, 0});
+            m_Config.m_StrandViewStartEnd.push_back({150, 299});
+
+        break;
+
         default:
         break;
     }
@@ -106,11 +117,13 @@ void CHAL::CreateStrandViews()
     m_LEDBuffer = new CRGB[m_Config.m_PhysicalStrandCount*m_Config.m_PhysicalStrandLEDCount];
     switch (m_Config.m_PhysicalStrandCount)
     {
+        case 1: FastLED.addLeds<APA102, G26, G32>(m_LEDBuffer, m_Config.m_PhysicalStrandLEDCount); break;
+
         // 2 strands is a dong with WS2812 aka 2811 type LEDs
-        case 2: FastLED.addLeds<WS2811_PORTA, 2, GRB>(m_LEDBuffer, m_Config.m_PhysicalStrandLEDCount); break;
+       // case 2: FastLED.addLeds<APA102, G26, G32>(m_LEDBuffer, m_Config.m_PhysicalStrandLEDCount); break;
 
         // 4 strands is jelly with WS2813 type LEDs
-        case 4: FastLED.addLeds<WS2813_PORTA, 4, GRB>(m_LEDBuffer, m_Config.m_PhysicalStrandLEDCount); break;
+        //case 4: FastLED.addLeds<APA102, 4, GRB>(m_LEDBuffer, m_Config.m_PhysicalStrandLEDCount); break;
 
         default: ERRX("ILLEGAL NUMBER OF PHYSICAL STRANDS"); break;
     }
@@ -141,5 +154,10 @@ void CHAL::FlushLEDs()
 {
     // Push buffers to HW
     show_at_max_brightness_for_power();
+}
+
+void CHAL::SetLEDButton(CRGB const& color)
+{
+    m_LEDButton = color;
 }
 }

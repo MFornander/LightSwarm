@@ -3,6 +3,9 @@
 
 namespace LightSwarm {
 
+RotaryEncoder::RotaryEncoder()
+{}
+
 RotaryEncoder::RotaryEncoder(int dt, int clk, int sw) :
     dtPin(dt),
     clkPin(clk),
@@ -11,6 +14,9 @@ RotaryEncoder::RotaryEncoder(int dt, int clk, int sw) :
 
 void RotaryEncoder::Begin(byte inMaxBias)
 {
+    // NULL mode
+    if (dtPin < 0) return;
+
     maxBias = inMaxBias;
     pinMode(swPin, INPUT_PULLUP);
     pinMode(dtPin,  INPUT);
@@ -19,11 +25,17 @@ void RotaryEncoder::Begin(byte inMaxBias)
 
 bool RotaryEncoder::Switch() const
 {
+    // NULL mode
+    if (dtPin < 0) return false;
+
     return digitalRead(swPin) == LOW;
 }
 
 int RotaryEncoder::Get()
 {
+    // NULL mode
+    if (dtPin < 0)  return 0;
+
     bool clkNew = digitalRead(clkPin);
     if (clk != clkNew)
     {
@@ -48,8 +60,10 @@ int RotaryEncoder::Get()
 
 void RotaryEncoder::Rebias(int inDelta)
 {
-    if (bias <= 1)
-        return;
+    // NULL mode
+    if (dtPin < 0) return;
+
+    if (bias <= 1) return;
 
     bias -= bias > inDelta ? inDelta : bias - 1;
 }
