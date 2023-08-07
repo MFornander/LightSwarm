@@ -11,11 +11,28 @@
 
 using namespace LightSwarm;
 
-Network         network;
-CHAL            hal(network.GetNodeID());
-CVunsq          player(hal);
-RotaryEncoder   encoder{};
-Control         control(network, encoder, player);
+class MainHelper
+{
+public:
+    MainHelper()
+    : hal(network.GetNodeID())
+    , player(hal)
+    , control(network, encoder, player)
+    {}
+
+    void Update()
+    {
+        control.Update();
+    }
+private:
+    Network         network;
+    CHAL            hal;
+    CVunsq          player;
+    RotaryEncoder   encoder;
+    Control         control;
+};
+
+std::shared_ptr<MainHelper> mainHelperPtr;
 
 void report()
 {
@@ -28,10 +45,11 @@ void report()
 
 void setup()
 {
+    mainHelperPtr = std::make_shared<MainHelper>();
 }
 
 void loop()
 {
     EVERY_N_SECONDS(1) { report(); }
-    control.Update();
+    mainHelperPtr->Update();
 }
