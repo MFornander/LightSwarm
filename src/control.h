@@ -1,9 +1,12 @@
 #pragma once
 
+#include "devices/rotary.h"
+#include "devices/button.h"
+#include "devices/indicator.h"
+
 namespace LightSwarm {
 
 class Network;
-class RotaryEncoder;
 class CVunsq;
 
 /**
@@ -13,7 +16,7 @@ class CVunsq;
 class Control final
 {
 public:
-    Control(Network& inNetwork, RotaryEncoder& inEncoder, CVunsq& inPlayer);
+    Control(Network& inNetwork, CVunsq& inPlayer);
 
     void Update();
 
@@ -22,19 +25,15 @@ public:
     void OnMessage(uint32_t inFromNodeID, const String& inMessage);
 
 protected:
-    void ReadEncoder();
     void SelectAnimation(int inIndex);
     void SelectSpeed(int inSpeed);
 
 private:
     Network&        m_Network;
-    RotaryEncoder&  m_Encoder;
     CVunsq&         m_Player;
+    Button          m_MainButton;
+    Indicator<>     m_Indicator;
 
-    uint32_t        m_LastTime = 0;
-    uint8_t         m_Value = 100;
-    bool            m_LastSwitch = false;
-    uint32_t        m_SwitchTime = 0;
     int             m_CurrrentAnimation;
     int             m_Speed = 0;
 

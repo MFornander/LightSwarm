@@ -5,7 +5,6 @@
 #include "control.h"
 #include "network.h"
 #include "presentation.h"
-#include "rotary.h"
 #include "version.h"
 #include "vunsq.h"
 
@@ -17,7 +16,7 @@ public:
     MainHelper()
     : hal(network.GetNodeID())
     , player(hal)
-    , control(network, encoder, player)
+    , control(network, player)
     {}
 
     void Update()
@@ -28,7 +27,6 @@ private:
     Network         network;
     CHAL            hal;
     CVunsq          player;
-    RotaryEncoder   encoder;
     Control         control;
 };
 

@@ -97,7 +97,6 @@ void CHAL::InitConfig()
             m_StrandViewCount = 2;
             m_Config.m_StrandViewStartEnd.push_back({149, 0});
             m_Config.m_StrandViewStartEnd.push_back({150, 299});
-
         break;
 
         default:
@@ -154,10 +153,5 @@ void CHAL::FlushLEDs()
 {
     // Push buffers to HW
     show_at_max_brightness_for_power();
-}
-
-void CHAL::SetLEDButton(CRGB const& color)
-{
-    m_LEDButton = color;
 }
 }

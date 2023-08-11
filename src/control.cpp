@@ -2,32 +2,38 @@
 #include "control.h"
 #include "debug.h"
 #include "network.h"
-#include "rotary.h"
 #include "vunsq.h"
 
 namespace LightSwarm {
 
-Control::Control(Network& inNetwork, RotaryEncoder& inEncoder, CVunsq& inPlayer) :
+Control::Control(Network& inNetwork, CVunsq& inPlayer) :
     m_Network(inNetwork),
-    m_Encoder(inEncoder),
     m_Player(inPlayer)
 {
     using namespace std::placeholders;
 
     m_Network.SetReceived( std::bind(&Control::OnMessage, this, _1, _2) );
-    m_Encoder.Begin(5);
-
-    m_SwitchTime = millis();
 
     const int kStartAnimation = 0;
     m_CurrrentAnimation = kStartAnimation + 1;
     SelectAnimation(kStartAnimation);
 }
 
-
 void Control::Update()
 {
-    ReadEncoder();
+    // Handle single and long click of the built in button on atom-lite
+    switch (m_MainButton.Poll())
+    {
+        case EButtonClick::Click_Single:
+            INFO(" [CTRL] SINGLE CLICK\n");
+        break;
+        case EButtonClick::Click_Long:
+            INFO(" [CTRL] LONG CLICK\n");
+        break;
+        case EButtonClick::Click_None:
+        default:
+        break;
+    }
 
     m_Network.Update();
 
@@ -41,69 +47,6 @@ void Control::Update()
     }
 
     m_Player.Step(m_Network.GetTime() / theTimeDivider);
-}
-
-
-void Control::ReadEncoder()
-{
-    bool theCurrentSwitch = m_Encoder.Switch();
-    uint32_t theCurrentTime = millis();
-
-    if (theCurrentSwitch ^ m_LastSwitch)
-    {
-        if (theCurrentSwitch)
-            m_SwitchTime = theCurrentTime;
-        else
-            OnClick(theCurrentTime - m_SwitchTime);
-
-        m_LastSwitch = theCurrentSwitch;
-    }
-    else
-    {
-        int delta = m_Encoder.Get();
-        if (delta != 0)
-        {
-            m_Value += delta;
-            OnTurn(delta);
-        }
-
-        if (m_LastTime != theCurrentTime)
-        {
-            m_LastTime = theCurrentTime;
-            m_Encoder.Rebias();
-        }
-    }
-}
-
-
-void Control::OnClick(uint32_t inMillisDown)
-{
-    const bool longClick = inMillisDown > 1000;
-
-    INFO(" [CTRL] Click duration=%u long=%s\n", inMillisDown, longClick ? "YES" : "no");
-
-    if (longClick)
-    {
-        StaticJsonDocument<kMaxJson> root;
-        root["msg"] = "SetAnim";
-        root["idx"] = m_Value;
-        root["spd"] = m_Speed;
-
-        char output[kMaxJson];
-        serializeJsonPretty(root, output, kMaxJson);
-
-        m_Network.Broadcast(output);
-    }
-    else
-    {
-        SelectSpeed(++m_Speed);
-    }
-}
-
-void Control::OnTurn(int inDelta)
-{
-    INFO(" [CTRL] Turn value=%u delta=%d\n", m_Value, inDelta);
-    SelectAnimation(m_Value);
 }
 
 void Control::OnMessage(uint32_t inFromNodeID, const String& inMessage)
