@@ -11,7 +11,7 @@ template <int pin = G27>
 class Indicator
 {
 private:
-    CRGB        m_Color{255,0,0};
+    CRGB        m_Color{0,0,0};
 
 public:
     Indicator() { FastLED.addLeds<NEOPIXEL, pin>(&m_Color, 1); }
