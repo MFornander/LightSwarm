@@ -15,17 +15,28 @@ Control::Control(Network& inNetwork, CVunsq& inPlayer) :
     m_Network.SetReceived( std::bind(&Control::OnMessage, this, _1, _2) );
 
     const int kStartAnimation = 0;
-    m_CurrrentAnimation = kStartAnimation + 1;
+    m_CurrentAnimation = kStartAnimation + 1;
     SelectAnimation(kStartAnimation);
 }
 
 void Control::Update()
 {
+    StaticJsonDocument<kMaxJson> json;
+
     // Handle single and long click of the built in button on atom-lite
     switch (m_MainButton.Poll())
     {
         case EButtonClick::Click_Single:
             INFO(" [CTRL] SINGLE CLICK\n");
+            SelectAnimation(m_CurrentAnimation+1);
+            
+            // Sync everybody to me with a network broadcast
+            json["msg"] = "SetAnim";
+            json["idx"] = m_CurrentAnimation;
+            json["spd"] = m_Speed;
+            char output[kMaxJson];
+            serializeJsonPretty(json, output, kMaxJson);
+            m_Network.Broadcast(output);
         break;
         case EButtonClick::Click_Long:
             INFO(" [CTRL] LONG CLICK\n");
@@ -80,9 +91,9 @@ void Control::SelectAnimation(int inIndex)
     const int kPresentationCount = 2;
     inIndex %= kPresentationCount;
 
-    if (inIndex == m_CurrrentAnimation)
+    if (inIndex == m_CurrentAnimation)
         return;
-    m_CurrrentAnimation = inIndex;
+    m_CurrentAnimation = inIndex;
 
     m_Player.FreePresentations();
 
@@ -101,9 +112,13 @@ void Control::SelectAnimation(int inIndex)
             thePresentation->AddStrand(theSequence, theByteCount);
             m_Player.AddPresentation(thePresentation, m_Network.GetNodeOffset());
 
+            // Update the indicator light show the animation we are on
+            m_Indicator.Set(CRGB{255,0,0});
+
             break;
         }
 
+        case 2:
         default:
         {
             CPresentation::CreateSequence(4, theSequence, theByteCount);
@@ -120,6 +135,9 @@ void Control::SelectAnimation(int inIndex)
             thePresentation  = new CPresentation();
             thePresentation->AddStrand(theSequence, theByteCount);
             m_Player.AddPresentation(thePresentation, m_Network.GetNodeOffset());
+
+            // Update the indicator light show the animation we are on
+            m_Indicator.Set(CRGB{0,255,0});
 
             break;
         }

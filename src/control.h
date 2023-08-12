@@ -34,7 +34,7 @@ private:
     Button          m_MainButton;
     Indicator<>     m_Indicator;
 
-    int             m_CurrrentAnimation;
+    int             m_CurrentAnimation;
     int             m_Speed = 0;
 
     static const size_t kMaxJson = 100;
